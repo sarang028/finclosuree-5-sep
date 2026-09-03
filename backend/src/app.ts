@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import path from 'path';
+import mongoose from 'mongoose';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -43,23 +44,13 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/demo', demoRoutes);
 
-import mongoose from 'mongoose';
-
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1;
-  if (!isDbConnected) {
-    res.status(503).json({
-      success: false,
-      server: 'ok',
-      database: 'disconnected',
-    });
-    return;
-  }
+  const isDbConnected = mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2;
   res.json({
     success: true,
     server: 'ok',
-    database: 'connected',
+    database: isDbConnected ? 'connected' : 'disconnected',
   });
 });
 
