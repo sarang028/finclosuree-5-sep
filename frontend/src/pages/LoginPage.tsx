@@ -5,11 +5,12 @@ import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/apiServices';
 import { getBackendBaseUrl } from '../services/apiClient';
-import { HeartHandshake, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,31 +46,42 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between font-sans">
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full glass-card p-8 rounded-2xl border-slate-800 shadow-2xl">
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-600 to-sky-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-teal-900/40">
-              <HeartHandshake className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Sign In to FinClosure</h2>
-            <p className="text-xs text-slate-400 mt-1">Access your financial closure workspace securely</p>
+      <main className="flex-1 flex items-center justify-center py-8 px-4 sm:px-6">
+        <div className="max-w-md w-full bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm text-center">
+          {/* Logo & Brand matching Reference Image Screen 1 */}
+          <div className="w-16 h-16 rounded-2xl bg-finclosure-100 flex items-center justify-center mx-auto mb-4 text-finclosure-800 border border-finclosure-200">
+            <ShieldCheck className="w-10 h-10" />
           </div>
 
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-1">
+            FinClosure
+          </h1>
+          <p className="text-xs font-bold text-finclosure-800 tracking-wide mb-6">
+            Secure. Simplify. Settle.
+          </p>
+
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug mb-2 max-w-xs mx-auto">
+            Simplifying financial closure for your loved ones.
+          </h2>
+          <p className="text-xs text-slate-500 mb-8 max-w-xs mx-auto">
+            Discover, organize and settle all financial matters with ease.
+          </p>
+
           {error && (
-            <div className="mb-6 p-3.5 rounded-xl bg-rose-950/60 border border-rose-800/60 text-rose-200 text-xs flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2 shrink-0 text-rose-400" />
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center text-left">
+              <AlertCircle className="w-4 h-4 mr-2 shrink-0 text-rose-600" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* Google Sign In Option */}
+          {/* Primary Action: Google Sign In */}
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-teal-500/50 text-slate-100 font-semibold text-sm rounded-xl transition-all flex items-center justify-center space-x-3 shadow-sm mb-6"
+            className="w-full py-3.5 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-sm rounded-2xl transition-all flex items-center justify-center space-x-3 shadow-sm mb-3.5 active:scale-98"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -92,60 +104,68 @@ export const LoginPage: React.FC = () => {
             <span>Continue with Google</span>
           </button>
 
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-800" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-950 px-3 text-slate-500 font-medium">Or email & password</span>
-            </div>
+          {/* Secondary Action: Email Sign In Toggle */}
+          {!showEmailForm ? (
+            <button
+              type="button"
+              onClick={() => setShowEmailForm(true)}
+              className="w-full py-3.5 px-4 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-sm rounded-2xl transition-all flex items-center justify-center space-x-2 shadow-2xs mb-6"
+            >
+              <Mail className="w-4 h-4 text-slate-600" />
+              <span>Continue with Email</span>
+            </button>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4 text-left my-4 pt-4 border-t border-slate-200">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-finclosure-800 focus:ring-1 focus:ring-finclosure-800"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-finclosure-800 focus:ring-1 focus:ring-finclosure-800"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center disabled:opacity-50"
+              >
+                {isLoading ? 'Signing In...' : 'Sign In'}
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </button>
+            </form>
+          )}
+
+          <div className="text-[11px] text-slate-400 mt-6 leading-relaxed">
+            By continuing, you agree to our <br className="hidden sm:inline" />
+            <span className="font-semibold text-slate-600 underline">Terms & Privacy Policy</span>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-teal-900/40 flex items-center justify-center disabled:opacity-50"
-            >
-              {isLoading ? 'Signing In...' : 'Sign In'}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-xs text-slate-400">
+          <div className="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
             Don't have an account?{' '}
-            <Link to="/register" className="text-teal-400 hover:text-teal-300 font-semibold ml-1">
-              Create One
+            <Link to="/register" className="text-finclosure-800 hover:underline font-bold ml-1">
+              Create Account
             </Link>
           </div>
         </div>

@@ -24,6 +24,7 @@ import { ClaimsPage } from './pages/ClaimsPage';
 import { ClaimDetailPage } from './pages/ClaimDetailPage';
 import { AiAssistantPage } from './pages/AiAssistantPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export const App: React.FC = () => {
   return (
@@ -66,6 +67,7 @@ export const App: React.FC = () => {
               <Route path="/claims/:id" element={<ClaimDetailPage />} />
               <Route path="/assistant" element={<AiAssistantPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
 
             {/* Fallback */}

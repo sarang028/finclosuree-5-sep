@@ -66,21 +66,21 @@ export const DeceasedProfilePage: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-12 text-slate-400 text-sm">Loading deceased profile...</div>;
+    return <div className="text-center py-12 text-slate-500 text-xs">Loading deceased profile...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Deceased Person Profile</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Manage personal information, claimant relationship, and institution context.</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Liabilities & Profile</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Manage liabilities, loans, and family profile context.</p>
         </div>
 
         {activeProfile && !isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="px-3.5 py-1.5 text-xs font-semibold text-teal-300 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors flex items-center"
+            className="px-3.5 py-1.5 text-xs font-bold text-finclosure-800 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors flex items-center"
           >
             <Edit3 className="w-3.5 h-3.5 mr-1.5" /> Edit Profile
           </button>
@@ -88,99 +88,73 @@ export const DeceasedProfilePage: React.FC = () => {
       </div>
 
       {activeProfile ? (
-        <div className="glass-card p-6 rounded-2xl border-slate-800 space-y-6">
+        <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-6 shadow-2xs">
           {!isEditing ? (
             <div className="space-y-6">
-              <div className="flex items-center space-x-4 border-b border-slate-800 pb-6">
-                <div className="w-16 h-16 rounded-2xl bg-teal-950 text-teal-400 border border-teal-800 flex items-center justify-center text-2xl font-extrabold">
+              <div className="flex items-center space-x-4 border-b border-slate-100 pb-6">
+                <div className="w-14 h-14 rounded-2xl bg-finclosure-100 text-finclosure-800 border border-finclosure-200 flex items-center justify-center text-xl font-black">
                   {activeProfile.fullName.charAt(0)}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white">{activeProfile.fullName}</h2>
-                  <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1">
-                    <span className="px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-800 font-medium">
+                  <h2 className="text-lg font-black text-slate-900">{activeProfile.fullName}</h2>
+                  <div className="flex items-center space-x-3 text-xs text-slate-500 mt-1">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-100 font-bold">
                       Role: {activeProfile.claimantRole}
                     </span>
-                    <span>Relationship: <strong className="text-slate-200">{activeProfile.relationship}</strong></span>
+                    <span>Relationship: <strong className="text-slate-900">{activeProfile.relationship}</strong></span>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-                  <span className="text-slate-500 font-semibold uppercase tracking-wider block mb-1">Date of Demise</span>
-                  <div className="text-sm font-semibold text-white flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-teal-400" />
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-slate-500 font-bold uppercase tracking-wider block mb-1">Date of Demise</span>
+                  <div className="text-xs font-bold text-slate-900 flex items-center">
+                    <Calendar className="w-4 h-4 mr-2 text-finclosure-800" />
                     {activeProfile.dateOfDeath ? new Date(activeProfile.dateOfDeath).toLocaleDateString() : 'Not provided'}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-                  <span className="text-slate-500 font-semibold uppercase tracking-wider block mb-1">Date of Birth</span>
-                  <div className="text-sm font-semibold text-white flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-sky-400" />
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-slate-500 font-bold uppercase tracking-wider block mb-1">Date of Birth</span>
+                  <div className="text-xs font-bold text-slate-900 flex items-center">
+                    <User className="w-4 h-4 mr-2 text-finclosure-800" />
                     {activeProfile.dateOfBirth ? new Date(activeProfile.dateOfBirth).toLocaleDateString() : 'Not provided'}
                   </div>
                 </div>
               </div>
-
-              {activeProfile.knownInstitutions && activeProfile.knownInstitutions.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center">
-                    <Building className="w-3.5 h-3.5 mr-1.5 text-teal-400" /> Associated Institutions
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {activeProfile.knownInstitutions.map((inst, i) => (
-                      <span key={i} className="px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200">
-                        {inst}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeProfile.notes && (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Additional Notes</h3>
-                  <p className="text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800 leading-relaxed">
-                    {activeProfile.notes}
-                  </p>
-                </div>
-              )}
             </div>
           ) : (
             <form onSubmit={handleUpdate} className="space-y-4 text-xs">
-              <h3 className="text-sm font-bold text-white mb-4">Edit Profile Information</h3>
-
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Full Name</label>
+                <label className="block text-slate-700 font-bold mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Relationship</label>
+                  <label className="block text-slate-700 font-bold mb-1">Relationship</label>
                   <input
                     type="text"
                     required
                     value={relationship}
                     onChange={(e) => setRelationship(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Claimant Role</label>
+                  <label className="block text-slate-700 font-bold mb-1">Claimant Role</label>
                   <select
                     value={claimantRole}
                     onChange={(e) => setClaimantRole(e.target.value as any)}
-                    className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800"
                   >
                     <option value="Nominee">Nominee</option>
                     <option value="Legal Heir">Legal Heir</option>
@@ -190,59 +164,29 @@ export const DeceasedProfilePage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Date of Demise</label>
-                  <input
-                    type="date"
-                    value={dateOfDeath}
-                    onChange={(e) => setDateOfDeath(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Date of Birth</label>
-                  <input
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">Notes</label>
-                <textarea
-                  rows={3}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:border-teal-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex items-center space-x-3 pt-2">
+              <div className="flex space-x-3 pt-2">
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-xl"
+                >
+                  Save Profile
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold"
+                  className="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold flex items-center"
-                >
-                  <Check className="w-3.5 h-3.5 mr-1" /> Save Changes
                 </button>
               </div>
             </form>
           )}
         </div>
       ) : (
-        <div className="glass-card p-8 rounded-2xl border-slate-800 text-center text-slate-400 text-xs">
-          No deceased profile created yet. Please complete onboarding or load sample demo data.
+        <div className="bg-white border border-slate-200 p-8 rounded-3xl text-center text-slate-500">
+          <User className="w-10 h-10 text-finclosure-800 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-900 mb-1">No Profile Active</h3>
+          <p className="text-xs text-slate-500">Complete onboarding to link your family profile.</p>
         </div>
       )}
     </div>

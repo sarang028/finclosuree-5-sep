@@ -9,33 +9,33 @@ interface ProgressRingProps {
 
 export const ProgressRing: React.FC<ProgressRingProps> = ({
   percentage,
-  size = 120,
+  size = 110,
   strokeWidth = 10,
-  label = 'FinClosure Progress',
+  label,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center shrink-0">
       <div className="relative" style={{ width: size, height: size }}>
         <svg className="w-full h-full transform -rotate-90" viewBox={`0 0 ${size} ${size}`}>
-          {/* Background circle */}
+          {/* Background track circle */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="stroke-slate-800"
+            className="stroke-emerald-100/80"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
-          {/* Animated progress circle */}
+          {/* Progress circle */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="stroke-teal-500 transition-all duration-1000 ease-out"
+            className="stroke-finclosure-800 transition-all duration-700 ease-out"
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
@@ -44,11 +44,10 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-extrabold text-white tracking-tight">{percentage}%</span>
-          <span className="text-[10px] text-teal-400 font-semibold uppercase tracking-wider">Score</span>
+          <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{percentage}%</span>
         </div>
       </div>
-      {label && <p className="mt-2 text-xs font-medium text-slate-400">{label}</p>}
+      {label && <p className="mt-1.5 text-xs font-semibold text-slate-600 text-center">{label}</p>}
     </div>
   );
 };

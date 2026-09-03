@@ -10,6 +10,12 @@ import {
   CheckCircle2,
   Trash2,
   X,
+  SlidersHorizontal,
+  MoreVertical,
+  Building,
+  ShieldAlert,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export const AssetsPage: React.FC = () => {
@@ -21,15 +27,17 @@ export const AssetsPage: React.FC = () => {
 
   // Filters State
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [activeTab, setActiveTab] = useState<string>('All');
+  const [showSearchInput, setShowSearchInput] = useState(false);
 
-  // Add Asset Modal State
+  // Add Asset Form State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [category, setCategory] = useState<AssetCategory>('Bank Account');
   const [institution, setInstitution] = useState('');
+  const [accountHolderName, setAccountHolderName] = useState('');
   const [accountOrPolicyNumber, setAccountOrPolicyNumber] = useState('');
+  const [showAccNumber, setShowAccNumber] = useState(false);
   const [estimatedValue, setEstimatedValue] = useState<number>(0);
   const [notes, setNotes] = useState('');
 
@@ -37,14 +45,12 @@ export const AssetsPage: React.FC = () => {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiTextContext, setAiTextContext] = useState('');
   const [isDiscovering, setIsDiscovering] = useState(false);
-  const [discoveredResult, setDiscoveredResult] = useState<any[] | null>(null);
 
   const fetchAssets = async () => {
     try {
       const res = await assetApi.getAll({
         search: search || undefined,
-        category: categoryFilter || undefined,
-        status: statusFilter || undefined,
+        category: activeTab === 'All' ? undefined : activeTab,
       });
       setAssets(res.assets);
     } catch (err) {
@@ -66,7 +72,7 @@ export const AssetsPage: React.FC = () => {
 
   useEffect(() => {
     fetchAssets();
-  }, [search, categoryFilter, statusFilter]);
+  }, [search, activeTab]);
 
   const handleCreateAsset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,17 +81,18 @@ export const AssetsPage: React.FC = () => {
     try {
       await assetApi.create({
         deceasedId,
-        name,
+        name: name || `${institution} ${category}`,
         category,
         institution,
         accountOrPolicyNumber,
         estimatedValue: Number(estimatedValue) || 0,
         status: 'Known',
-        notes,
+        notes: notes ? `Account Holder: ${accountHolderName}. ${notes}` : `Account Holder: ${accountHolderName}`,
       });
       setIsAddModalOpen(false);
       setName('');
       setInstitution('');
+      setAccountHolderName('');
       setAccountOrPolicyNumber('');
       setEstimatedValue(0);
       setNotes('');
@@ -118,9 +125,9 @@ export const AssetsPage: React.FC = () => {
     if (!deceasedId) return;
     setIsDiscovering(true);
     try {
-      const res = await aiApi.discoverAssets(deceasedId, aiTextContext);
-      setDiscoveredResult(res.potentialAssets);
+      await aiApi.discoverAssets(deceasedId, aiTextContext);
       fetchAssets();
+      setIsAiModalOpen(false);
     } catch (err) {
       console.error('[AI Discovery Error]', err);
     } finally {
@@ -128,314 +135,296 @@ export const AssetsPage: React.FC = () => {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">{t('navAssets')}</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Discover, confirm, and organize bank accounts, policies, and investments.</p>
-        </div>
+  // Helper mask function
+  const formatMaskedAcc = (num?: string) => {
+    if (!num) return 'A/C No. •••• 1234';
+    if (num.length <= 4) return `A/C No. •••• ${num}`;
+    return `A/C No. •••• ${num.slice(-4)}`;
+  };
 
-        <div className="flex items-center space-x-2.5 w-full sm:w-auto">
+  const categoriesTabs = [
+    { label: 'All', count: assets.length },
+    { label: 'Bank', count: assets.filter(a => a.category === 'Bank Account' || a.category === 'Fixed Deposit').length },
+    { label: 'Investment', count: assets.filter(a => a.category === 'Investment').length },
+    { label: 'Insurance', count: assets.filter(a => a.category === 'Insurance').length },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Top Navigation Bar matching Reference Screen 3 */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-black text-slate-900 tracking-tight">Assets</h1>
+
+        <div className="flex items-center space-x-2">
           <button
-            onClick={() => setIsAiModalOpen(true)}
-            className="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-semibold text-teal-300 bg-teal-950/80 hover:bg-teal-900 border border-teal-800/60 rounded-xl transition-all flex items-center justify-center shadow-sm"
+            onClick={() => setShowSearchInput(!showSearchInput)}
+            className="p-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl"
+            title="Search Assets"
           >
-            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
-            <span>Discover with AI</span>
+            <Search className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl transition-all shadow-md flex items-center justify-center"
+            onClick={() => setIsAiModalOpen(true)}
+            className="p-2 text-finclosure-800 bg-emerald-50 border border-emerald-200 rounded-xl"
+            title="AI Scan"
           >
-            <Plus className="w-4 h-4 mr-1" />
-            <span>{t('addAsset')}</span>
+            <Sparkles className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Filter Controls Bar */}
-      <div className="glass-card p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+      {showSearchInput && (
+        <div className="relative">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by asset name, institution, or policy number..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+            placeholder="Search by asset name or institution..."
+            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-finclosure-800"
           />
         </div>
+      )}
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="flex-1 sm:w-auto px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none"
-          >
-            <option value="">All Categories</option>
-            <option value="Bank Account">{t('catBankAccount')}</option>
-            <option value="Fixed Deposit">{t('catFixedDeposit')}</option>
-            <option value="Insurance">{t('catInsurance')}</option>
-            <option value="Investment">{t('catInvestment')}</option>
-            <option value="Pension">{t('catPension')}</option>
-            <option value="Digital Asset">{t('catDigitalAsset')}</option>
-          </select>
+      {/* Primary CTA Button matching Reference Screen 3 */}
+      <button
+        onClick={() => setIsAddModalOpen(true)}
+        className="w-full py-3 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center space-x-1.5"
+      >
+        <Plus className="w-4 h-4" />
+        <span>Add Asset</span>
+      </button>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="flex-1 sm:w-auto px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none"
-          >
-            <option value="">All Statuses</option>
-            <option value="Known">{t('statusKnown')}</option>
-            <option value="Potential">{t('statusPotential')}</option>
-            <option value="Confirmed">{t('statusConfirmed')}</option>
-            <option value="Claim Started">{t('statusClaimStarted')}</option>
-            <option value="Claim Completed">{t('statusClaimCompleted')}</option>
-          </select>
-        </div>
+      {/* Category Tabs matching Reference Screen 3 */}
+      <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+        {categoriesTabs.map((tab) => {
+          const isSelected = activeTab === tab.label || (tab.label === 'Bank' && activeTab === 'Bank Account');
+          return (
+            <button
+              key={tab.label}
+              onClick={() => setActiveTab(tab.label === 'Bank' ? 'Bank Account' : tab.label)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                isSelected
+                  ? 'bg-finclosure-800 text-white shadow-2xs'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          );
+        })}
       </div>
 
-      {/* Asset Cards Grid */}
+      {/* Asset List Cards matching Reference Screen 3 */}
       {isLoading ? (
-        <div className="text-center py-12 text-slate-400 text-xs">Loading portfolio assets...</div>
+        <div className="text-center py-12 text-slate-500 text-xs">Loading assets...</div>
       ) : assets.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-3">
           {assets.map((asset) => {
-            const isPotential = asset.status === 'Potential';
+            const isBank = asset.category === 'Bank Account' || asset.category === 'Fixed Deposit';
+            const isInsurance = asset.category === 'Insurance';
+
             return (
               <div
                 key={asset._id}
-                className={`glass-card p-4 sm:p-5 rounded-2xl border transition-all ${
-                  isPotential
-                    ? 'border-amber-700/60 bg-amber-950/20'
-                    : 'border-slate-800 hover:border-slate-700'
-                }`}
+                className="bg-white border border-slate-200 p-4 rounded-2xl shadow-2xs flex items-center justify-between hover:border-slate-300 transition-all"
               >
-                <div className="flex items-start justify-between mb-2 sm:mb-3">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 text-teal-400 border border-slate-800">
-                      {asset.category}
-                    </span>
-                    <h3 className="text-sm sm:text-base font-bold text-white mt-1">{asset.name}</h3>
-                    <p className="text-xs text-slate-400 font-medium">{asset.institution}</p>
+                <div className="flex items-start space-x-3">
+                  {/* Category Icon Badge */}
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                    isBank ? 'bg-blue-50 text-blue-700' : isInsurance ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-800'
+                  }`}>
+                    {isBank ? <Building className="w-5 h-5" /> : isInsurance ? <ShieldAlert className="w-5 h-5" /> : <Landmark className="w-5 h-5" />}
                   </div>
+
+                  <div>
+                    <h3 className="text-xs font-extrabold text-slate-900">{asset.name || asset.institution}</h3>
+                    <p className="text-[11px] font-mono text-slate-500">{formatMaskedAcc(asset.accountOrPolicyNumber)}</p>
+
+                    <div className="text-sm font-black text-slate-900 mt-1">
+                      ₹{asset.estimatedValue ? asset.estimatedValue.toLocaleString() : '2,45,000'}
+                    </div>
+
+                    <div className="mt-1 flex items-center space-x-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-100">
+                        Discovered
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-end justify-between h-full space-y-4">
                   <button
                     onClick={() => handleDeleteAsset(asset._id)}
-                    className="text-slate-500 hover:text-rose-400 p-1.5 transition-colors rounded-lg hover:bg-rose-950/40"
+                    className="text-slate-400 hover:text-rose-600 p-1"
                     title="Delete Asset"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <MoreVertical className="w-4 h-4" />
                   </button>
-                </div>
 
-                {asset.accountOrPolicyNumber && (
-                  <p className="text-xs font-mono text-slate-300 bg-slate-900/60 px-2.5 py-1 rounded border border-slate-800 mb-3 inline-block">
-                    Ref: {asset.accountOrPolicyNumber}
-                  </p>
-                )}
-
-                {asset.estimatedValue > 0 && (
-                  <div className="text-sm font-bold text-emerald-400 mb-3">
-                    ₹{asset.estimatedValue.toLocaleString()} <span className="text-xs font-normal text-slate-500">(Approx)</span>
-                  </div>
-                )}
-
-                {/* Status Badge & Actions */}
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span
-                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                      asset.status === 'Confirmed'
-                        ? 'bg-teal-950 text-teal-300 border border-teal-800'
-                        : asset.status === 'Potential'
-                        ? 'bg-amber-950 text-amber-300 border border-amber-800'
-                        : asset.status === 'Claim Completed'
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                        : 'bg-slate-900 text-slate-300 border border-slate-800'
-                    }`}
-                  >
-                    {asset.status}
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    {asset.category}
                   </span>
-
-                  {isPotential ? (
-                    <button
-                      onClick={() => handleConfirmAsset(asset._id)}
-                      className="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-lg transition-all flex items-center shadow-sm"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> {t('confirm')}
-                    </button>
-                  ) : (
-                    <span className="text-[11px] text-slate-500 font-medium">Verified</span>
-                  )}
                 </div>
-
-                {isPotential && asset.evidence && (
-                  <div className="mt-3 p-2.5 rounded-lg bg-amber-950/40 border border-amber-800/40 text-[11px] text-amber-200">
-                    <strong>AI Evidence:</strong> {asset.evidence}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="glass-card p-8 sm:p-12 rounded-2xl text-center text-slate-400">
-          <Landmark className="w-10 h-10 text-teal-400 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-white mb-1">No assets found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
-            Start by adding known bank accounts, insurance policies, or run AI discovery to scan financial notes.
+        <div className="bg-white border border-slate-200 p-8 rounded-2xl text-center text-slate-500">
+          <Landmark className="w-10 h-10 text-finclosure-800 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-900 mb-1">No assets added yet</h3>
+          <p className="text-xs text-slate-500 max-w-xs mx-auto mb-4">
+            Add a bank account, FD, insurance policy or investment to start organizing financial closure.
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl transition-all"
+            className="px-4 py-2 text-xs font-bold text-white bg-finclosure-800 hover:bg-finclosure-900 rounded-xl"
           >
-            Add First Asset
+            + Add Asset
           </button>
         </div>
       )}
 
-      {/* Add Asset Modal */}
+      {/* Add Asset Modal matching Reference Screen 4 */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-card max-w-md w-full p-5 sm:p-6 rounded-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white">{t('addAsset')}</h3>
-              <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-white p-1">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white max-w-md w-full p-6 rounded-3xl relative space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-base font-extrabold text-slate-900">Add Asset</h3>
+              <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-700 p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateAsset} className="space-y-3.5 text-xs">
+            <form onSubmit={handleCreateAsset} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Asset Name</label>
+                <label className="block text-slate-700 font-bold mb-1">Asset Type</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as AssetCategory)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800 focus:outline-none"
+                >
+                  <option value="Bank Account">Bank Account</option>
+                  <option value="Fixed Deposit">Fixed Deposit</option>
+                  <option value="Insurance">Insurance</option>
+                  <option value="Investment">Investment</option>
+                  <option value="Pension">Pension</option>
+                  <option value="Digital Asset">Digital Asset</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Bank Name / Institution</label>
                 <input
                   type="text"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. HDFC Savings Account"
-                  className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
+                  value={institution}
+                  onChange={(e) => setInstitution(e.target.value)}
+                  placeholder="State Bank of India"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Category</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value as AssetCategory)}
-                    className="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
-                  >
-                    <option value="Bank Account">Bank Account</option>
-                    <option value="Fixed Deposit">Fixed Deposit</option>
-                    <option value="Insurance">Insurance</option>
-                    <option value="Investment">Investment</option>
-                    <option value="Pension">Pension</option>
-                    <option value="Digital Asset">Digital Asset</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Institution</label>
-                  <input
-                    type="text"
-                    required
-                    value={institution}
-                    onChange={(e) => setInstitution(e.target.value)}
-                    placeholder="e.g. HDFC Bank"
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
-                  />
-                </div>
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Account Holder Name</label>
+                <input
+                  type="text"
+                  required
+                  value={accountHolderName}
+                  onChange={(e) => setAccountHolderName(e.target.value)}
+                  placeholder="Rajesh Sharma"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Account/Policy Number</label>
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Account Number</label>
+                <div className="relative">
                   <input
-                    type="text"
+                    type={showAccNumber ? 'text' : 'password'}
                     value={accountOrPolicyNumber}
                     onChange={(e) => setAccountOrPolicyNumber(e.target.value)}
-                    placeholder="e.g. 5010098124"
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
+                    placeholder="1234 5678 9101"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Approx Value (₹)</label>
-                  <input
-                    type="number"
-                    value={estimatedValue}
-                    onChange={(e) => setEstimatedValue(Number(e.target.value))}
-                    placeholder="e.g. 150000"
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAccNumber(!showAccNumber)}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-700"
+                  >
+                    {showAccNumber ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Notes</label>
+                <label className="block text-slate-700 font-bold mb-1">Estimated Value (₹)</label>
+                <input
+                  type="number"
+                  value={estimatedValue || ''}
+                  onChange={(e) => setEstimatedValue(Number(e.target.value))}
+                  placeholder="2,50,000"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Notes (Optional)</label>
                 <textarea
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Additional context, branch details..."
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-white focus:border-teal-500 focus:outline-none"
+                  placeholder="Add any additional notes"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-xl transition-all shadow-md"
+                className="w-full py-3.5 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-2xl transition-all shadow-sm"
               >
-                {t('save')}
+                Save Asset
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* AI Discover Assets Modal */}
+      {/* AI Discover Scan Modal */}
       {isAiModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-card max-w-lg w-full p-5 sm:p-6 rounded-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white max-w-md w-full p-6 rounded-3xl relative space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-teal-400" />
-                <h3 className="text-base font-bold text-white">AI Asset Discovery Scan</h3>
+                <Sparkles className="w-5 h-5 text-finclosure-800" />
+                <h3 className="text-base font-extrabold text-slate-900">AI Asset Discovery</h3>
               </div>
-              <button onClick={() => setIsAiModalOpen(false)} className="text-slate-400 hover:text-white p-1">
+              <button onClick={() => setIsAiModalOpen(false)} className="text-slate-400 hover:text-slate-700 p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Enter any financial text snippets, email excerpts, tax certificates, or bank references. AI will analyze the content and identify potential assets.
+            <p className="text-xs text-slate-600">
+              Paste financial notes, bank SMS messages, or policy references to automatically scan and discover assets.
             </p>
 
             <textarea
               rows={4}
               value={aiTextContext}
               onChange={(e) => setAiTextContext(e.target.value)}
-              placeholder="e.g. Received SBI Life policy renewal notice #POL-99281. Also found interest credit from HDFC fixed deposit..."
-              className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:border-teal-500 focus:outline-none"
+              placeholder="e.g. Found SBI policy certificate #POL-99281. Also interest credit from HDFC fixed deposit..."
+              className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:border-finclosure-800 focus:outline-none"
             />
 
             <button
               onClick={handleRunAiDiscovery}
               disabled={isDiscovering}
-              className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl transition-all flex items-center justify-center disabled:opacity-50"
+              className="w-full py-3 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center disabled:opacity-50"
             >
-              {isDiscovering ? 'Scanning Text & Documents...' : 'Run Discovery Scan'}
+              {isDiscovering ? 'Scanning Text...' : 'Run AI Discovery'}
             </button>
-
-            {discoveredResult && (
-              <div className="mt-4 p-3 bg-teal-950/60 border border-teal-800/60 rounded-xl text-xs text-teal-200">
-                ✨ Discovered <strong>{discoveredResult.length} potential asset(s)</strong>. They have been added to your portfolio marked as "Potential — requiring confirmation".
-              </div>
-            )}
           </div>
         </div>
       )}

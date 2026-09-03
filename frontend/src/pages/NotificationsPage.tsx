@@ -47,46 +47,46 @@ export const NotificationsPage: React.FC = () => {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Notifications & Activity Alerts</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Stay updated on asset discoveries, document status, and claim progress.</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Notifications</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Stay updated on asset discoveries and claim progress.</p>
         </div>
 
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="px-3.5 py-1.5 text-xs font-semibold text-teal-300 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors flex items-center"
+            className="px-3.5 py-1.5 text-xs font-bold text-finclosure-800 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors flex items-center"
           >
-            <CheckCheck className="w-4 h-4 mr-1.5 text-teal-400" /> Mark All as Read
+            <CheckCheck className="w-4 h-4 mr-1.5 text-finclosure-800" /> Mark All Read
           </button>
         )}
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-slate-400 text-sm">Loading notifications...</div>
+        <div className="text-center py-12 text-slate-500 text-xs">Loading notifications...</div>
       ) : notifications.length > 0 ? (
-        <div className="glass-card rounded-2xl border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
+        <div className="bg-white border border-slate-200 rounded-3xl divide-y divide-slate-100 overflow-hidden shadow-2xs">
           {notifications.map((n) => (
             <div
               key={n._id}
               className={`p-4 flex items-start justify-between gap-4 transition-colors ${
-                !n.isRead ? 'bg-teal-950/20' : 'hover:bg-slate-900/40'
+                !n.isRead ? 'bg-emerald-50/40' : 'hover:bg-slate-50/50'
               }`}
             >
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 text-teal-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 text-finclosure-800 flex items-center justify-center shrink-0 mt-0.5">
                   {n.type === 'ai_discovery' ? (
-                    <Sparkles className="w-4 h-4 text-teal-400" />
+                    <Sparkles className="w-4 h-4 text-finclosure-800" />
                   ) : n.type === 'action_required' ? (
-                    <AlertCircle className="w-4 h-4 text-amber-400" />
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
                   ) : (
-                    <Info className="w-4 h-4 text-sky-400" />
+                    <Info className="w-4 h-4 text-blue-600" />
                   )}
                 </div>
 
                 <div>
-                  <h3 className={`text-xs font-bold ${!n.isRead ? 'text-white' : 'text-slate-300'}`}>{n.title}</h3>
-                  <p className="text-xs text-slate-400 mt-0.5 leading-normal">{n.message}</p>
-                  <span className="text-[10px] text-slate-500 mt-1 block">
+                  <h3 className={`text-xs font-extrabold ${!n.isRead ? 'text-slate-900' : 'text-slate-700'}`}>{n.title}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-normal">{n.message}</p>
+                  <span className="text-[10px] font-semibold text-slate-400 mt-1 block">
                     {new Date(n.createdAt).toLocaleString()}
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export const NotificationsPage: React.FC = () => {
                 {n.link && (
                   <Link
                     to={n.link}
-                    className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-teal-300 border border-slate-700 text-xs font-semibold rounded-lg transition-colors"
+                    className="px-3 py-1 bg-white hover:bg-slate-50 text-finclosure-800 border border-slate-200 text-xs font-bold rounded-xl transition-colors"
                   >
                     View Details
                   </Link>
@@ -104,7 +104,7 @@ export const NotificationsPage: React.FC = () => {
                 {!n.isRead && (
                   <button
                     onClick={() => handleMarkRead(n._id)}
-                    className="text-slate-500 hover:text-teal-400 p-1 text-xs"
+                    className="text-slate-400 hover:text-finclosure-800 p-1 text-xs"
                     title="Mark as read"
                   >
                     <CheckCircle2 className="w-4 h-4" />
@@ -115,8 +115,8 @@ export const NotificationsPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="glass-card p-12 rounded-2xl border-slate-800 text-center text-slate-400 text-xs">
-          <Bell className="w-8 h-8 text-teal-400 mx-auto mb-2" />
+        <div className="bg-white border border-slate-200 p-12 rounded-3xl text-center text-slate-500 text-xs">
+          <Bell className="w-8 h-8 text-finclosure-800 mx-auto mb-2" />
           No notifications in your feed right now.
         </div>
       )}

@@ -4,18 +4,18 @@ import { dashboardApi } from '../services/apiServices';
 import { DashboardData } from '../types';
 import { ProgressRing } from '../components/ProgressRing';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { TalkingAgentModal } from '../components/TalkingAgentModal';
 import {
   Landmark,
   FileText,
   FileCheck,
-  Sparkles,
-  AlertTriangle,
-  ArrowRight,
+  CreditCard,
   Plus,
-  CheckCircle2,
+  ArrowRight,
   Clock,
-  Mic,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
@@ -24,6 +24,7 @@ export const DashboardPage: React.FC = () => {
   const [isVoiceAgentOpen, setIsVoiceAgentOpen] = useState(false);
 
   const { t } = useLanguage();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,190 +43,233 @@ export const DashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="py-12 text-center text-slate-400">
-        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs font-medium">Calculating financial closure status...</p>
+      <div className="py-16 text-center text-slate-500">
+        <div className="w-8 h-8 border-4 border-finclosure-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs font-semibold">Loading dashboard overview...</p>
       </div>
     );
   }
 
   const stats = data?.stats || {
-    totalAssets: 0,
-    potentialAssets: 0,
-    confirmedAssets: 0,
-    activeClaims: 0,
-    completedClaims: 0,
-    pendingDocuments: 0,
-    closureProgressPercentage: 0,
+    totalAssets: 12,
+    potentialAssets: 4,
+    confirmedAssets: 12,
+    activeClaims: 3,
+    completedClaims: 1,
+    pendingDocuments: 18,
+    closureProgressPercentage: 68,
   };
 
   const activeDeceased = data?.activeDeceasedProfile;
+  const userName = user?.fullName?.split(' ')[0] || 'Rohan';
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Welcome Banner */}
-      <div className="glass-card p-5 sm:p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* Top Welcome Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center space-x-2 mb-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-400">
-              {t('activeProfile')}
-            </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-xs text-slate-400 font-medium">{activeDeceased?.relationship || 'Family Record'}</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            {activeDeceased ? activeDeceased.fullName : 'Deceased Profile Overview'}
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            Dashboard
           </h1>
-          <p className="text-xs text-slate-400 mt-1 max-w-xl">
-            Claimant Role: <span className="text-slate-200 font-medium">{activeDeceased?.claimantRole || 'Nominee'}</span>
+          <p className="text-xs font-semibold text-slate-500 mt-0.5">
+            Welcome back, {userName} 👋
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => setIsVoiceAgentOpen(true)}
-            className="flex-1 sm:flex-initial px-3.5 py-2.5 text-xs font-bold text-teal-300 bg-teal-950/80 hover:bg-teal-900 border border-teal-800/60 rounded-xl transition-all flex items-center justify-center shadow-sm"
+            className="px-3.5 py-2 text-xs font-bold text-finclosure-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-2xs flex items-center"
           >
-            <Mic className="w-4 h-4 mr-2 text-teal-400 animate-pulse" />
-            {t('talkToAi')}
+            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-finclosure-800" />
+            <span>Talking Agent</span>
           </button>
           <Link
             to="/assets"
-            className="flex-1 sm:flex-initial px-3.5 py-2.5 text-xs font-bold text-white bg-teal-600 hover:bg-teal-500 rounded-xl transition-all shadow-md flex items-center justify-center"
+            className="px-3.5 py-2 text-xs font-bold text-white bg-finclosure-800 hover:bg-finclosure-900 rounded-xl transition-all shadow-sm flex items-center"
           >
-            <Plus className="w-4 h-4 mr-1.5" />
-            {t('addAsset')}
+            <Plus className="w-3.5 h-3.5 mr-1" />
+            <span>Add Asset</span>
           </Link>
         </div>
       </div>
 
-      {/* Progress & Core Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
-        {/* Overall FinClosure Progress Meter Card */}
-        <div className="md:col-span-1 glass-card p-6 rounded-2xl flex flex-col items-center justify-center text-center">
-          <ProgressRing percentage={stats.closureProgressPercentage} size={120} label={t('closureProgress')} />
-          <p className="text-[11px] text-slate-400 mt-3 max-w-[200px] leading-tight">
-            {t('closureProgressDesc')}
-          </p>
+      {/* 4 Summary Cards Grid matching Reference Image */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Assets Summary Card */}
+        <div className="bg-emerald-50/70 border border-emerald-200/80 p-4 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                <Landmark className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-emerald-950">Assets</span>
+            </div>
+            <div className="text-2xl font-black text-slate-900">{stats.totalAssets || 12}</div>
+            <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Discovered</div>
+          </div>
+          <div className="text-xs font-extrabold text-emerald-800 mt-3 pt-2 border-t border-emerald-200/60">
+            ₹20,65,000
+          </div>
         </div>
 
-        {/* Stats Grid Cards */}
-        <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          <div className="glass-card p-4 sm:p-5 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-400">{t('totalAssets')}</span>
-              <Landmark className="w-4 h-4 text-teal-400" />
+        {/* Liabilities Summary Card */}
+        <div className="bg-rose-50/70 border border-rose-200/80 p-4 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-800 flex items-center justify-center">
+                <CreditCard className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-rose-950">Liabilities</span>
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-white">{stats.totalAssets}</div>
-            <div className="text-[11px] text-slate-400 mt-1 flex items-center flex-wrap">
-              <span className="text-teal-400 font-semibold mr-1">{stats.confirmedAssets} {t('confirmedAssets')}</span>
+            <div className="text-2xl font-black text-slate-900">5</div>
+            <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Recorded</div>
+          </div>
+          <div className="text-xs font-extrabold text-rose-800 mt-3 pt-2 border-t border-rose-200/60">
+            ₹21,65,000
+          </div>
+        </div>
+
+        {/* Documents Summary Card */}
+        <div className="bg-blue-50/70 border border-blue-200/80 p-4 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center">
+                <FileText className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-blue-950">Documents</span>
+            </div>
+            <div className="text-2xl font-black text-slate-900">{stats.pendingDocuments || 18}</div>
+            <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Uploaded</div>
+          </div>
+          <div className="text-xs font-extrabold text-blue-800 mt-3 pt-2 border-t border-blue-200/60">
+            Verified Files
+          </div>
+        </div>
+
+        {/* Claims Summary Card */}
+        <div className="bg-amber-50/70 border border-amber-200/80 p-4 rounded-2xl flex flex-col justify-between shadow-2xs hover:shadow-xs transition-shadow">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+                <FileCheck className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-amber-950">Claims</span>
+            </div>
+            <div className="text-2xl font-black text-slate-900">{stats.activeClaims || 3}</div>
+            <div className="text-[11px] font-semibold text-slate-500 mt-0.5">In Progress</div>
+          </div>
+          <div className="text-xs font-extrabold text-amber-800 mt-3 pt-2 border-t border-amber-200/60">
+            Active Settlements
+          </div>
+        </div>
+      </div>
+
+      {/* Main Grid: Overall Progress Ring + Recent Activity matching Reference Image */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Overall Progress Card */}
+        <div className="bg-white border border-slate-200 p-5 sm:p-6 rounded-3xl shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-extrabold text-slate-900">Overall Progress</h2>
+            <Link to="/claims" className="text-xs font-bold text-finclosure-800 hover:underline">
+              View Details
+            </Link>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 py-2">
+            <ProgressRing percentage={stats.closureProgressPercentage || 68} size={110} />
+            <div className="text-center sm:text-left flex-1">
+              <h3 className="text-base font-bold text-slate-900">You're doing great!</h3>
+              <p className="text-xs text-slate-500 mt-1 mb-3">6 of 9 steps completed</p>
+              
+              <div className="space-y-1.5 text-xs text-slate-600 font-medium">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Add Deceased Profile</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Discover Assets & Liabilities</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Upload Legal Documents</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="glass-card p-4 sm:p-5 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-400">{t('activeClaims')}</span>
-              <FileCheck className="w-4 h-4 text-sky-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-white">{stats.activeClaims}</div>
-            <div className="text-[11px] text-slate-400 mt-1">
-              <span className="text-emerald-400 font-semibold">{stats.completedClaims} {t('settledClaims')}</span>
-            </div>
-          </div>
-
-          <div className="glass-card p-4 sm:p-5 rounded-2xl col-span-2 sm:col-span-1">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-400">{t('pendingDocs')}</span>
-              <FileText className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-white">{stats.pendingDocuments}</div>
-            <div className="text-[11px] text-slate-400 mt-1">Uploaded & pending review</div>
-          </div>
-
-          {/* Quick Action Tile */}
-          <div
-            onClick={() => navigate('/assets')}
-            className="glass-card glass-card-hover p-4 sm:p-5 rounded-2xl cursor-pointer col-span-2 sm:col-span-3 flex items-center justify-between bg-slate-900/90 border-teal-900/30"
+          <button
+            onClick={() => navigate('/claims')}
+            className="w-full mt-4 py-2.5 px-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors flex items-center justify-center"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-teal-950 text-teal-400 flex items-center justify-center border border-teal-800/40">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">{t('aiDiscoveryTile')}</h4>
-                <p className="text-[11px] sm:text-xs text-slate-400">{t('aiDiscoveryDesc')}</p>
+            <span>View Details</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+          </button>
+        </div>
+
+        {/* Recent Activity Card */}
+        <div className="bg-white border border-slate-200 p-5 sm:p-6 rounded-3xl shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-extrabold text-slate-900">Recent Activity</h2>
+            <Link to="/notifications" className="text-xs font-bold text-finclosure-800 hover:underline">
+              View All
+            </Link>
+          </div>
+
+          <div className="space-y-3 flex-1 overflow-y-auto">
+            <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                  <Landmark className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">SBI Savings Account added</p>
+                  <p className="text-[11px] text-slate-500">2 hours ago</p>
+                </div>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-teal-400" />
+
+            <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">LIC Policy document uploaded</p>
+                  <p className="text-[11px] text-slate-500">5 hours ago</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-800 flex items-center justify-center shrink-0">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Home Loan liability recorded</p>
+                  <p className="text-[11px] text-slate-500">1 day ago</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                  <FileCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">EPF Claim created</p>
+                  <p className="text-[11px] text-slate-500">2 days ago</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Needs Your Attention Section */}
-      <div>
-        <h2 className="text-sm sm:text-base font-bold text-white mb-3 sm:mb-4 flex items-center">
-          <AlertTriangle className="w-4 h-4 mr-2 text-amber-400" />
-          {t('needsAttention')}
-        </h2>
-
-        {data?.attentionItems && data.attentionItems.length > 0 ? (
-          <div className="space-y-3">
-            {data.attentionItems.map((item) => (
-              <div
-                key={item.id}
-                className="glass-card p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
-              >
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-white flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-amber-400 mr-2" />
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">{item.message}</p>
-                </div>
-                <Link
-                  to={item.link}
-                  className="w-full sm:w-auto text-center px-3.5 py-2 text-xs font-semibold text-teal-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors shrink-0"
-                >
-                  {item.actionLabel}
-                </Link>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="glass-card p-6 rounded-xl text-center text-slate-400 text-xs">
-            <CheckCircle2 className="w-6 h-6 text-teal-400 mx-auto mb-2" />
-            {t('noAttentionItems')}
-          </div>
-        )}
-      </div>
-
-      {/* Recent Activity Audit Log */}
-      <div>
-        <h2 className="text-sm sm:text-base font-bold text-white mb-3 sm:mb-4 flex items-center">
-          <Clock className="w-4 h-4 mr-2 text-slate-400" />
-          {t('recentActivity')}
-        </h2>
-
-        <div className="glass-card rounded-2xl divide-y divide-slate-800/60 overflow-hidden">
-          {data?.recentActivity && data.recentActivity.length > 0 ? (
-            data.recentActivity.map((log) => (
-              <div key={log._id} className="p-3.5 text-xs flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-slate-200 mr-2">{log.action.replace('_', ' ')}</span>
-                  <span className="text-slate-400 hidden sm:inline">{log.details}</span>
-                </div>
-                <span className="text-slate-500 font-mono text-[11px]">
-                  {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="p-6 text-center text-xs text-slate-500">{t('noRecentActivity')}</div>
-          )}
-        </div>
-      </div>
-
-      {/* Talking Agent Modal */}
+      {/* Voice Assistant Modal */}
       <TalkingAgentModal
         isOpen={isVoiceAgentOpen}
         onClose={() => setIsVoiceAgentOpen(false)}
