@@ -1,9 +1,33 @@
 import axios from 'axios';
 
-const API_BASE = '/api';
+/**
+ * Returns backend base URL (without trailing /api)
+ * In local dev: defaults to http://localhost:5000
+ * In production: reads VITE_API_URL environment variable
+ */
+export const getBackendBaseUrl = (): string => {
+  const rawApiUrl = import.meta.env.VITE_API_URL;
+  if (rawApiUrl) {
+    const cleaned = rawApiUrl.replace(/\/+$/, '');
+    return cleaned.endsWith('/api') ? cleaned.slice(0, -4) : cleaned;
+  }
+  return 'http://localhost:5000';
+};
+
+/**
+ * Returns API base URL (ending with /api)
+ */
+export const getApiBaseUrl = (): string => {
+  const rawApiUrl = import.meta.env.VITE_API_URL;
+  if (rawApiUrl) {
+    const cleaned = rawApiUrl.replace(/\/+$/, '');
+    return cleaned.endsWith('/api') ? cleaned : `${cleaned}/api`;
+  }
+  return '/api';
+};
 
 export const apiClient = axios.create({
-  baseURL: API_BASE,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },

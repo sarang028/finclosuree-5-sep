@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/apiServices';
+import { getBackendBaseUrl } from '../services/apiClient';
 import { HeartHandshake, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -40,7 +41,7 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = `${getBackendBaseUrl()}/api/auth/google`;
   };
 
   return (

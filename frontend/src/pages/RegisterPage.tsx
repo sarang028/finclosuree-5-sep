@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/apiServices';
+import { getBackendBaseUrl } from '../services/apiClient';
 import { HeartHandshake, Lock, Mail, User as UserIcon, Phone, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {
@@ -69,7 +70,7 @@ export const RegisterPage: React.FC = () => {
           {/* Google Sign In Option */}
           <button
             type="button"
-            onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google'; }}
+            onClick={() => { window.location.href = `${getBackendBaseUrl()}/api/auth/google`; }}
             className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-teal-500/50 text-slate-100 font-semibold text-sm rounded-xl transition-all flex items-center justify-center space-x-3 shadow-sm mb-6"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
