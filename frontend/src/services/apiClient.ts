@@ -16,6 +16,8 @@ export const getBackendBaseUrl = (): string => {
 
 /**
  * Returns API base URL (ending with /api)
+ * Reads VITE_API_URL environment variable if present.
+ * Defaults to http://localhost:5000/api for local development.
  */
 export const getApiBaseUrl = (): string => {
   const rawApiUrl = import.meta.env.VITE_API_URL;
@@ -23,7 +25,7 @@ export const getApiBaseUrl = (): string => {
     const cleaned = rawApiUrl.replace(/\/+$/, '');
     return cleaned.endsWith('/api') ? cleaned : `${cleaned}/api`;
   }
-  return '/api';
+  return 'http://localhost:5000/api';
 };
 
 export const apiClient = axios.create({
@@ -35,6 +37,7 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
+    config.baseURL = getApiBaseUrl();
     const token = localStorage.getItem('finclosure_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

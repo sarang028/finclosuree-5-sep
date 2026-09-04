@@ -1,14 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
 import { authApi } from '../services/apiServices';
+import { DEMO_USER, initializeDemoStorage, clearDemoStorage } from '../services/demoService';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isDemoMode: boolean;
   login: (token: string, user: User) => void;
   register: (token: string, user: User) => void;
+  startDemo: () => void;
+  exitDemo: () => void;
   logout: () => void;
   setUser: (user: User | null) => void;
 }
@@ -21,11 +25,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : null;
   });
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('finclosure_token'));
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(() => localStorage.getItem('finclosure_is_demo') === 'true');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       if (token) {
+        if (isDemoMode || token.startsWith('demo_')) {
+          setIsDemoMode(true);
+          setUser(DEMO_USER);
+          setIsLoading(false);
+          return;
+        }
+
         try {
           const res = await authApi.getMe();
           setUser(res.user);
@@ -38,9 +50,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     };
     checkAuth();
-  }, [token]);
+  }, [token, isDemoMode]);
 
   const login = (newToken: string, newUser: User) => {
+    setIsDemoMode(false);
+    localStorage.removeItem('finclosure_is_demo');
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('finclosure_token', newToken);
@@ -51,11 +65,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login(newToken, newUser);
   };
 
+  const startDemo = () => {
+    initializeDemoStorage();
+    setIsDemoMode(true);
+    setToken('demo_session_token_xyz987');
+    setUser(DEMO_USER);
+  };
+
+  const exitDemo = () => {
+    clearDemoStorage();
+    setIsDemoMode(false);
+    setToken(null);
+    setUser(null);
+  };
+
   const logout = () => {
+    if (isDemoMode) {
+      exitDemo();
+      return;
+    }
     setToken(null);
     setUser(null);
     localStorage.removeItem('finclosure_token');
     localStorage.removeItem('finclosure_user');
+    localStorage.removeItem('finclosure_is_demo');
   };
 
   return (
@@ -65,8 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!token && !!user,
         isLoading,
+        isDemoMode,
         login,
         register,
+        startDemo,
+        exitDemo,
         logout,
         setUser,
       }}

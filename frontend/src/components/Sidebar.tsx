@@ -27,7 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile = false,
   onCloseMobile,
 }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, isDemoMode } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -129,10 +129,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center px-3 py-2 text-xs font-semibold text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-slate-200"
+            className={`w-full flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-xl transition-colors border ${
+              isDemoMode
+                ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 font-bold'
+                : 'text-slate-600 hover:text-rose-700 hover:bg-rose-50 border-slate-200'
+            }`}
           >
             <LogOut className="w-3.5 h-3.5 mr-2" />
-            {t('signOut')}
+            {isDemoMode ? 'Exit Demo' : t('signOut')}
           </button>
         </div>
       </aside>

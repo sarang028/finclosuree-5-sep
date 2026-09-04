@@ -21,7 +21,10 @@ uploads/
 backend/uploads/
 *.log
 
-# IDE & OS
+# Binaries & Executables
+cloudflared.exe
+*.exe
+
 .vscode/
 .idea/
 .DS_Store

@@ -6,7 +6,7 @@ import { TalkingAgentModal } from './TalkingAgentModal';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Bell, RefreshCw, Menu, ShieldCheck } from 'lucide-react';
+import { Sparkles, Bell, RefreshCw, Menu, ShieldCheck, LogOut } from 'lucide-react';
 import { demoApi } from '../services/apiServices';
 
 export const AppLayout: React.FC = () => {
@@ -16,7 +16,7 @@ export const AppLayout: React.FC = () => {
   const [isTalkingAgentOpen, setIsTalkingAgentOpen] = useState(false);
 
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, isDemoMode, exitDemo } = useAuth();
   const navigate = useNavigate();
 
   const handleSeedDemo = async () => {
@@ -45,6 +45,26 @@ export const AppLayout: React.FC = () => {
 
       {/* Main Workspace Area */}
       <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
+        {/* Top App Banner when in Demo Mode */}
+        {isDemoMode && (
+          <div className="bg-amber-500 text-slate-950 font-extrabold text-xs px-4 py-2 flex items-center justify-between shadow-xs border-b border-amber-600 sticky top-0 z-40">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping" />
+              <span>⚠️ DEMO MODE — Simulated Demonstration Environment (No Database Writes)</span>
+            </div>
+            <button
+              onClick={() => {
+                exitDemo();
+                navigate('/login');
+              }}
+              className="bg-slate-950 hover:bg-slate-900 text-amber-400 font-bold px-3 py-1 rounded-lg text-xs transition-colors flex items-center space-x-1"
+            >
+              <span>Exit Demo</span>
+              <LogOut className="w-3.5 h-3.5 ml-1" />
+            </button>
+          </div>
+        )}
+
         {/* Top App Header */}
         <header className="h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
           <div className="flex items-center space-x-3">

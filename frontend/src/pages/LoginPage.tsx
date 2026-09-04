@@ -5,7 +5,7 @@ import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/apiServices';
 import { getBackendBaseUrl } from '../services/apiClient';
-import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,8 +15,13 @@ export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [searchParams] = useSearchParams();
-  const { login } = useAuth();
+  const { login, startDemo } = useAuth();
   const navigate = useNavigate();
+
+  const handleStartDemo = () => {
+    startDemo();
+    navigate('/dashboard');
+  };
 
   useEffect(() => {
     const err = searchParams.get('error');
@@ -81,7 +86,7 @@ export const LoginPage: React.FC = () => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full py-3.5 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-sm rounded-2xl transition-all flex items-center justify-center space-x-3 shadow-sm mb-3.5 active:scale-98"
+            className="w-full py-3.5 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-sm rounded-2xl transition-all flex items-center justify-center space-x-3 shadow-sm mb-3 active:scale-98"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -102,6 +107,16 @@ export const LoginPage: React.FC = () => {
               />
             </svg>
             <span>Continue with Google</span>
+          </button>
+
+          {/* Instant Access: Start Demo Mode */}
+          <button
+            type="button"
+            onClick={handleStartDemo}
+            className="w-full py-3.5 px-4 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-900 font-bold text-sm rounded-2xl transition-all flex items-center justify-center space-x-2 shadow-2xs mb-3.5 active:scale-98"
+          >
+            <Sparkles className="w-4 h-4 text-teal-600 animate-pulse" />
+            <span>Start Demo (Instant Access)</span>
           </button>
 
           {/* Secondary Action: Email Sign In Toggle */}
