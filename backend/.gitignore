@@ -4,11 +4,14 @@
 !.env.example
 
 # Node dependencies
+node_modules
 node_modules/
 
 # Build output
+dist
 dist/
 
 # Uploads
+uploads
 uploads/*
-!uploads/.gitkeep
+!.uploads/.gitkeep

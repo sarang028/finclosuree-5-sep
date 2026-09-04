@@ -7,8 +7,8 @@ const startServer = async () => {
 
   const PORT = parseInt(env.PORT, 10) || 5000;
 
-  app.listen(PORT, () => {
-    console.log(`[FinClosure Backend] Express server running on port ${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[FinClosure Backend] Express server running on port ${PORT} bound to 0.0.0.0`);
     console.log(`[FinClosure Backend] Health check: http://localhost:${PORT}/api/health`);
     console.log(`[Google OAuth Diagnostic] CLIENT_ID: ${env.GOOGLE_CLIENT_ID ? 'configured' : 'MISSING'}`);
     console.log(`[Google OAuth Diagnostic] CLIENT_SECRET: ${env.GOOGLE_CLIENT_SECRET ? 'configured' : 'MISSING'}`);

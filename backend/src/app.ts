@@ -46,12 +46,20 @@ app.use('/api/demo', demoRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2;
-  res.json({
-    success: true,
-    server: 'ok',
-    database: isDbConnected ? 'connected' : 'disconnected',
-  });
+  const isDbConnected = mongoose.connection.readyState === 1;
+  if (isDbConnected) {
+    res.status(200).json({
+      success: true,
+      message: 'FinClosure backend is running',
+      database: 'connected',
+    });
+  } else {
+    res.status(503).json({
+      success: false,
+      message: 'FinClosure backend is running but database is disconnected',
+      database: 'disconnected',
+    });
+  }
 });
 
 // Centralized error handler
