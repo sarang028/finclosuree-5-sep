@@ -4,18 +4,15 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import {
-  HeartHandshake,
-  ShieldCheck,
   Search,
   FileText,
-  FileCheck,
-  CheckCircle2,
-  Lock,
-  Compass,
-  Sparkles,
+  ShieldCheck,
+  Flag,
   ArrowRight,
-  TrendingUp,
-  Award,
+  Play,
+  Users,
+  CheckCircle2,
+  Heart,
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -27,85 +24,168 @@ export const LandingPage: React.FC = () => {
     navigate('/dashboard');
   };
 
-  const journeySteps = [
-    { title: 'Discover', desc: 'Uncover hidden bank accounts, term deposits, insurance policies & pensions.', icon: Search },
-    { title: 'Understand', desc: 'AI extracts details & identifies missing requirements without legal jargon.', icon: Compass },
-    { title: 'Organize', desc: 'Centralize essential death certificates, identity proofs & policy records.', icon: FileText },
-    { title: 'Prepare', desc: 'Receive custom document checklists generated specifically for your claimant role.', icon: Sparkles },
-    { title: 'Claim', desc: 'Follow step-by-step visual claim journeys for each individual institution.', icon: FileCheck },
-    { title: 'Track', desc: 'Monitor active verification, branch reviews & settlement milestones.', icon: TrendingUp },
-    { title: 'Close', desc: 'Achieve total financial closure and secure your family’s economic future.', icon: CheckCircle2 },
+  const journeyStages = [
+    {
+      step: '01',
+      title: 'DISCOVER',
+      desc: 'Uncover bank accounts, investments, insurance, deposits and liabilities.',
+      icon: Search,
+    },
+    {
+      step: '02',
+      title: 'ORGANIZE',
+      desc: 'Centralize documents and understand what is required.',
+      icon: FileText,
+    },
+    {
+      step: '03',
+      title: 'CLAIM',
+      desc: 'Get guided instructions, submit claims and track institutional processing.',
+      icon: ShieldCheck,
+    },
+    {
+      step: '04',
+      title: 'CLOSE',
+      desc: 'Complete approvals, recover outstanding money and finish financial closure.',
+      icon: Flag,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-teal-500 selection:text-white">
+    <div className="min-h-screen bg-[#0B132B] text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 -right-40 w-96 h-96 bg-sky-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* HERO SECTION */}
+      <section className="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        {/* Subtle Ambient Glows */}
+        <div className="absolute top-10 left-10 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-6">
-            <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-            <span className="text-xs font-semibold text-teal-300">GenAI-Powered Financial Settlement Platform</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Clear Value Proposition */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+              Closing Finances.{' '}
+              <span className="text-emerald-400 block sm:inline">
+                Securing Futures.
+              </span>
+            </h1>
+
+            <p className="text-lg sm:text-xl text-slate-300 font-normal leading-relaxed max-w-2xl">
+              Discover, organize, claim and track the financial assets and liabilities of a loved one — in one secure place.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+              <button
+                onClick={handleStartDemo}
+                className="px-7 py-3.5 text-sm font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-full transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2.5 active:scale-98"
+              >
+                <span>Start Demo (Instant Access)</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <a
+                href="#how-it-works"
+                className="px-6 py-3.5 text-sm font-semibold text-slate-200 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-full transition-all flex items-center justify-center space-x-2"
+              >
+                <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-slate-300">
+                  <Play className="w-2.5 h-2.5 fill-slate-300 ml-0.5" />
+                </div>
+                <span>See How It Works</span>
+              </a>
+            </div>
+
+            {/* 3 Key Trust / Value Badges matching reference image */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-slate-800/80">
+              <div className="flex items-center space-x-2.5 text-slate-300">
+                <Users className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-xs font-semibold">For Families Who Care</span>
+              </div>
+              <div className="flex items-center space-x-2.5 text-slate-300">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-xs font-semibold">Simple & Guided Process</span>
+              </div>
+              <div className="flex items-center space-x-2.5 text-slate-300">
+                <Heart className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-xs font-semibold">A More Secure Tomorrow</span>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
-            Closing Finances.{' '}
-            <span className="bg-gradient-to-r from-teal-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
-              Securing Futures.
-            </span>
-          </h1>
+          {/* Right Column: Emotional Family Photography */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 group">
+              <img
+                src="https://images.unsplash.com/photo-1609234656388-0ff363383899?auto=format&fit=crop&w=1000&q=80"
+                alt="Indian Grandfather hugging daughter warmly"
+                className="w-full h-[420px] object-cover object-center group-hover:scale-103 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B132B] via-transparent to-transparent opacity-80" />
 
-          <p className="text-lg sm:text-xl text-slate-300 mb-10 leading-relaxed font-normal">
-            FinClosure helps nominees and legal heirs discover financial assets, organize documents, generate institution-specific claim checklists, and navigate settlement processes after losing a loved one.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={handleStartDemo}
-              className="w-full sm:w-auto px-8 py-4 text-base font-extrabold text-teal-950 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-300 hover:to-emerald-300 rounded-xl transition-all shadow-xl shadow-teal-950/80 flex items-center justify-center space-x-2.5 active:scale-98"
-            >
-              <Sparkles className="w-5 h-5 text-teal-950 fill-teal-950" />
-              <span>Start Demo (Instant Access)</span>
-            </button>
-            <Link
-              to="/register"
-              className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-all flex items-center justify-center"
-            >
-              Create Account
-            </Link>
+              {/* Emotional Overlay Cursive Quote matching reference image */}
+              <div className="absolute bottom-6 right-6 text-right max-w-xs">
+                <p className="font-serif italic text-xl sm:text-2xl text-emerald-200 drop-shadow-md">
+                  "More than finances. A legacy of love."
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Visual Product Journey Roadmap */}
-      <section className="py-16 bg-slate-900/60 border-y border-slate-900">
+      {/* THE FINCLOSURE JOURNEY SECTION */}
+      <section id="how-it-works" className="py-16 bg-[#070D1E] border-y border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 mb-2">The FinClosure Journey</h2>
-            <p className="text-2xl sm:text-3xl font-bold text-white">7 Steps to Complete Financial Closure</p>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 block mb-2">
+              THE FINCLOSURE JOURNEY
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
+              From Uncertainty to Closure
+            </h2>
+            <p className="text-sm text-slate-400">
+              A simple, guided process to help you handle what matters.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
-            {journeySteps.map((step, idx) => {
-              const Icon = step.icon;
+          {/* 4 Visually Dominant Stage Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 relative">
+            {journeyStages.map((stage, idx) => {
+              const Icon = stage.icon;
               return (
-                <div
-                  key={step.title}
-                  className="glass-card p-4 rounded-xl flex flex-col justify-between border-slate-800/80 hover:border-teal-500/40 transition-all"
-                >
-                  <div>
-                    <div className="w-8 h-8 rounded-lg bg-teal-950 text-teal-400 border border-teal-800/60 flex items-center justify-center mb-3 font-bold text-xs">
-                      0{idx + 1}
+                <div key={stage.step} className="relative group">
+                  <div className="h-full p-6 rounded-2xl bg-[#0F1836] border border-slate-800 hover:border-emerald-500/50 transition-all flex flex-col justify-between shadow-lg">
+                    <div>
+                      {/* Step Number & Icon Header */}
+                      <div className="flex items-center justify-between mb-5">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-950 text-emerald-400 font-extrabold text-xs border border-emerald-800/60">
+                          {stage.step}
+                        </span>
+                        <div className="w-10 h-10 rounded-xl bg-slate-800/80 text-emerald-400 flex items-center justify-center group-hover:bg-emerald-900/50 transition-colors">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                      </div>
+
+                      {/* Stage Title */}
+                      <h3 className="text-base font-extrabold text-white mb-2 tracking-wide">
+                        {stage.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {stage.desc}
+                      </p>
                     </div>
-                    <h3 className="text-base font-bold text-white mb-1 flex items-center">
-                      <Icon className="w-4 h-4 mr-1.5 text-teal-400" />
-                      {step.title}
-                    </h3>
-                    <p className="text-xs text-slate-400 leading-normal">{step.desc}</p>
+
+                    {/* Arrow Connector indicator for desktop */}
+                    {idx < journeyStages.length - 1 && (
+                      <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                        <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400">
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -114,79 +194,35 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Core Problem & Solution Section */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 mb-3">The Challenge Families Face</h2>
-            <h3 className="text-3xl font-bold text-white leading-tight mb-6">
-              When a loved one passes away, financial closure shouldn't be an overwhelming ordeal.
-            </h3>
-            <p className="text-slate-300 mb-4 leading-relaxed">
-              Families often don't know all bank accounts, insurance policies, term deposits, or investments left behind. Even when known, every bank, insurer, and pension provider demands different document sets and physical procedures.
-            </p>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              FinClosure brings clarity, compassionate guidance, and automated assistance so you never have to guess what document to submit next.
-            </p>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-teal-400 mr-3 mt-0.5 shrink-0" />
-                <span className="text-sm text-slate-200">AI-driven discovery of unconfirmed policies & bank accounts</span>
-              </div>
-              <div className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-teal-400 mr-3 mt-0.5 shrink-0" />
-                <span className="text-sm text-slate-200">Personalized checklists tailored to Nominees vs. Legal Heirs</span>
-              </div>
-              <div className="flex items-start">
-                <CheckCircle2 className="w-5 h-5 text-teal-400 mr-3 mt-0.5 shrink-0" />
-                <span className="text-sm text-slate-200">Visual step-by-step claim journeys with context-aware AI advice</span>
-              </div>
+      {/* BOTTOM COMPASSIONATE BANNER */}
+      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="p-8 rounded-3xl bg-gradient-to-r from-emerald-950/80 via-[#0C2D24] to-[#0A1D18] border border-emerald-800/50 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white mb-1">
+                Technology for tough times.
+              </h3>
+              <p className="text-xs text-emerald-200/80">
+                Support for brighter tomorrows.
+              </p>
             </div>
           </div>
 
-          <div className="glass-card p-8 rounded-2xl border-slate-800 bg-slate-900/80">
-            <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-800">
-              <div className="w-10 h-10 rounded-xl bg-teal-950 text-teal-400 border border-teal-800 flex items-center justify-center">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-white">FinClosure Intelligence Guarantee</h4>
-                <p className="text-xs text-slate-400">Built on safety, privacy, and verification</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-xs font-semibold text-teal-400 uppercase tracking-wider block mb-1">Empathetic Design</span>
-                <p className="text-xs text-slate-300">Calm, clear UI that simplifies stressful financial paperwork.</p>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-xs font-semibold text-teal-400 uppercase tracking-wider block mb-1">Human-in-the-Loop Confirmation</span>
-                <p className="text-xs text-slate-300">AI proposes potential assets; you remain in total control to confirm before adding to portfolio.</p>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-xs font-semibold text-teal-400 uppercase tracking-wider block mb-1">Bank-Grade Privacy</span>
-                <p className="text-xs text-slate-300">Your documents are isolated and accessible only to your authenticated account.</p>
-              </div>
-            </div>
+          <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+            <span className="text-xs font-serif italic text-emerald-200">
+              Because every story deserves a closure.
+            </span>
+            <button
+              onClick={handleStartDemo}
+              className="w-10 h-10 rounded-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 flex items-center justify-center shadow-lg transition-transform hover:scale-105 shrink-0"
+              title="Start Demo"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-b from-slate-900 to-slate-950 border-t border-slate-900">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-extrabold text-white mb-4">Start Managing Financial Closure Today</h2>
-          <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
-            Take control of the financial closure process with structured checklists, AI assistance, and transparent progress tracking.
-          </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center px-8 py-4 text-base font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl transition-all shadow-lg shadow-teal-950"
-          >
-            Create Deceased Profile
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Link>
         </div>
       </section>
 
@@ -194,3 +230,4 @@ export const LandingPage: React.FC = () => {
     </div>
   );
 };
+

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HeartHandshake, ArrowRight, Sparkles } from 'lucide-react';
+import { Leaf, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar: React.FC = () => {
@@ -13,76 +13,68 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 glass-card border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 bg-[#0B132B]/90 backdrop-blur-md border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-sky-500 flex items-center justify-center shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform">
-            <HeartHandshake className="w-6 h-6 text-white" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-900/30 group-hover:scale-105 transition-transform">
+            <Leaf className="w-5 h-5 text-white fill-white/20" />
           </div>
-          <div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-teal-400 bg-clip-text text-transparent">
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight text-white leading-none">
               FinClosure
             </span>
-            <span className="hidden sm:inline-block ml-2 text-xs font-medium text-teal-400/80 tracking-wide uppercase px-2 py-0.5 rounded-full bg-teal-950/60 border border-teal-800/40">
-              Securing Futures
+            <span className="text-[10px] font-medium text-emerald-400 tracking-wide mt-0.5">
+              Closing Finances. Securing Futures.
             </span>
           </div>
         </Link>
 
         {/* Nav Links */}
         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-          <Link to="/how-it-works" className="hover:text-teal-400 transition-colors">
+          <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
             How It Works
           </Link>
-          <Link to="/features" className="hover:text-teal-400 transition-colors">
+          <Link to="/features" className="hover:text-emerald-400 transition-colors">
             Features
           </Link>
-          <Link to="/about" className="hover:text-teal-400 transition-colors">
+          <Link to="/about" className="hover:text-emerald-400 transition-colors">
             About
           </Link>
         </nav>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-3 sm:space-x-4">
+        <div className="flex items-center space-x-3">
           {!isAuthenticated && (
             <button
               onClick={handleStartDemo}
-              className="inline-flex items-center px-3.5 py-1.5 text-xs font-bold text-teal-300 bg-teal-950/90 hover:bg-teal-900 border border-teal-700/60 rounded-lg transition-all shadow-xs"
+              className="inline-flex items-center px-4 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 rounded-full transition-all shadow-md shadow-emerald-950/50"
               title="Instant Access Demo Account"
             >
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-teal-400 animate-pulse" />
               <span>Start Demo</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </button>
           )}
 
           {isAuthenticated ? (
             <Link
               to="/dashboard"
-              className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-lg transition-all shadow-md shadow-teal-900/40"
+              className="inline-flex items-center px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-full transition-all shadow-md shadow-emerald-900/40"
             >
-              Go to Dashboard
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <span>Go to Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Link>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-500 hover:to-sky-500 rounded-lg transition-all shadow-md shadow-teal-900/30"
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
-            </>
+            <Link
+              to="/login"
+              className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 transition-colors"
+            >
+              Sign In
+            </Link>
           )}
         </div>
       </div>
     </header>
   );
 };
+
