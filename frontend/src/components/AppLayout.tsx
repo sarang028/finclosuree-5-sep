@@ -36,7 +36,7 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row text-slate-900 font-sans">
+    <div className="min-h-screen bg-[#EEF4F1] flex flex-col md:flex-row text-slate-900 font-sans">
       {/* Sidebar Drawer */}
       <Sidebar
         isOpenMobile={isMobileDrawerOpen}
@@ -44,7 +44,7 @@ export const AppLayout: React.FC = () => {
       />
 
       {/* Main Workspace Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0 bg-[#EEF4F1]">
         {/* Top App Banner when in Demo Mode */}
         {isDemoMode && (
           <div className="bg-amber-500 text-slate-950 font-extrabold text-xs px-4 py-2 flex items-center justify-between shadow-xs border-b border-amber-600 sticky top-0 z-40">
@@ -66,7 +66,7 @@ export const AppLayout: React.FC = () => {
         )}
 
         {/* Top App Header */}
-        <header className="h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+        <header className="h-16 border-b border-slate-300/60 bg-white/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsMobileDrawerOpen(true)}
@@ -136,8 +136,8 @@ export const AppLayout: React.FC = () => {
           </div>
         )}
 
-        {/* Page Main Content */}
-        <main className="flex-1 p-3 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto">
+        {/* Page Main Content - Full Canvas Width */}
+        <main className="flex-1 w-full mx-auto p-2 sm:p-4 lg:p-6">
           <Outlet />
         </main>
 

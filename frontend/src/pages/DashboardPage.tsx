@@ -128,7 +128,7 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Main Content Layout Container */}
-      <div className="max-w-[1380px] mx-auto px-3 sm:px-5 lg:px-6 space-y-5">
+      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-6 lg:px-8 space-y-5">
         {/* Header */}
         <DashboardHeader />
 
