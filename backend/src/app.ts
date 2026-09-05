@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import mongoose from 'mongoose';
 import { env } from './config/env.js';
+import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 // Route imports
@@ -17,6 +18,18 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import demoRoutes from './routes/demoRoutes.js';
 
 const app: Express = express();
+
+// Ensure DB connection for serverless / API requests
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await connectDB();
+    } catch (err) {
+      console.error('[Serverless DB Connection Warning]', err);
+    }
+  }
+  next();
+});
 
 // CORS configuration
 app.use(
@@ -33,7 +46,24 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const uploadsPath = path.resolve(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// API Routes
+// API Root & Health Routes
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'FinClosure API Service is active',
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.status(isDbConnected ? 200 : 503).json({
+    success: isDbConnected,
+    message: isDbConnected ? 'FinClosure backend is running' : 'FinClosure backend is running but database is disconnected',
+    database: isDbConnected ? 'connected' : 'disconnected',
+  });
+});
+
+// API Feature Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/deceased', deceasedRoutes);
 app.use('/api/assets', assetRoutes);
@@ -44,25 +74,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/demo', demoRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1;
-  if (isDbConnected) {
-    res.status(200).json({
-      success: true,
-      message: 'FinClosure backend is running',
-      database: 'connected',
-    });
-  } else {
-    res.status(503).json({
-      success: false,
-      message: 'FinClosure backend is running but database is disconnected',
-      database: 'disconnected',
-    });
-  }
-});
-
 // Centralized error handler
 app.use(errorHandler);
 
 export default app;
+
