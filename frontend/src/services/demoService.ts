@@ -1,5 +1,17 @@
 import { DeceasedProfile, Asset, DocumentItem, Claim, ClaimStep, ChecklistItem, NotificationItem, DashboardData, User } from '../types';
 
+export interface IdentityVerificationDetails {
+  nomineeName: string;
+  relationship: string;
+  aadhaarMasked: string;
+  panMasked: string;
+  mobile: string;
+  isConsentGiven: boolean;
+  kycStatus: 'Pending' | 'In Progress' | 'Verified';
+  kycVerifiedAt?: string;
+  kycDemoId?: string;
+}
+
 export const DEMO_USER: User = {
   id: 'demo_user_123',
   fullName: 'Ankit Sharma (Demo User)',
@@ -7,6 +19,18 @@ export const DEMO_USER: User = {
   phone: '+91 98765 43210',
   role: 'claimant',
   provider: 'local',
+};
+
+export const DEMO_IDENTITY_VERIFICATION: IdentityVerificationDetails = {
+  nomineeName: 'Ankit Sharma',
+  relationship: 'Son / Nominee',
+  aadhaarMasked: 'XXXX XXXX 4821',
+  panMasked: 'ABCDE****F',
+  mobile: '+91 98765 43210',
+  isConsentGiven: true,
+  kycStatus: 'Verified',
+  kycVerifiedAt: new Date().toISOString(),
+  kycDemoId: 'KYC-DEMO-2026-88492',
 };
 
 export const DEMO_DECEASED: DeceasedProfile = {
@@ -17,7 +41,7 @@ export const DEMO_DECEASED: DeceasedProfile = {
   claimantRole: 'Both',
   dateOfBirth: '1962-04-15',
   dateOfDeath: '2026-01-10',
-  notes: '[DEMO DATA] Deceased profile preloaded with realistic sample financial portfolio.',
+  notes: '[DEMO DATA] Deceased profile preloaded with simulated financial portfolio.',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -26,6 +50,21 @@ export const DEMO_ASSETS: Asset[] = [
   // ASSETS (6 Items)
   {
     _id: 'demo_asset_1',
+    userId: 'demo_user_123',
+    deceasedId: 'demo_deceased_1',
+    name: 'Axis Bank Savings Account',
+    category: 'Bank Account',
+    recordType: 'Asset',
+    institution: 'Axis Bank',
+    accountOrPolicyNumber: 'AXIS-9102938410',
+    estimatedValue: 400000,
+    status: 'Confirmed',
+    notes: '[DEMO DATA] Savings Account at Axis Bank. Balance: ₹4,00,000.',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: 'demo_asset_2',
     userId: 'demo_user_123',
     deceasedId: 'demo_deceased_1',
     name: 'Reliance Industries / Jio Stock Holdings',
@@ -40,32 +79,17 @@ export const DEMO_ASSETS: Asset[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: 'demo_asset_2',
-    userId: 'demo_user_123',
-    deceasedId: 'demo_deceased_1',
-    name: 'Axis Bank Savings Account',
-    category: 'Bank Account',
-    recordType: 'Asset',
-    institution: 'Axis Bank',
-    accountOrPolicyNumber: 'AXIS-9102938410',
-    estimatedValue: 400000,
-    status: 'Confirmed',
-    notes: '[DEMO DATA] Primary savings account at Axis Bank. Balance: ₹4,00,000.',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
     _id: 'demo_asset_3',
     userId: 'demo_user_123',
     deceasedId: 'demo_deceased_1',
-    name: 'Life Insurance Policy',
-    category: 'Insurance',
+    name: 'Axis Bank Fixed Deposit',
+    category: 'Fixed Deposit',
     recordType: 'Asset',
-    institution: 'Life Insurance Corporation of India (LIC)',
-    accountOrPolicyNumber: 'LIC-POL-10029384',
-    estimatedValue: 10000000, // ₹1,00,00,000 (₹1 Crore)
+    institution: 'Axis Bank',
+    accountOrPolicyNumber: 'FD-9921048',
+    estimatedValue: 400000,
     status: 'Claim Not Started',
-    notes: '[DEMO DATA] Term Life Insurance Policy with Sum assured / claim value ₹1,00,00,000 (₹1 Crore). Status: Claim Not Started.',
+    notes: '[DEMO DATA] Fixed Deposit (FD) at Axis Bank. Principal: ₹4,00,000. Status: Claim Not Started.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -73,19 +97,34 @@ export const DEMO_ASSETS: Asset[] = [
     _id: 'demo_asset_4',
     userId: 'demo_user_123',
     deceasedId: 'demo_deceased_1',
-    name: 'Health Insurance Policy',
+    name: 'LIC Term Life Insurance Policy',
+    category: 'Insurance',
+    recordType: 'Asset',
+    institution: 'Life Insurance Corporation of India (LIC)',
+    accountOrPolicyNumber: 'LIC-POL-10029384',
+    estimatedValue: 10000000, // ₹1,00,00,000 (₹1 Crore)
+    status: 'Claim Ready',
+    notes: '[DEMO DATA] Term Life Insurance Policy with Sum Assured ₹1,00,00,000 (₹1 Crore). Status: Claim Ready.',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: 'demo_asset_5',
+    userId: 'demo_user_123',
+    deceasedId: 'demo_deceased_1',
+    name: 'Star Health Insurance Policy',
     category: 'Health Insurance',
     recordType: 'Asset',
     institution: 'Star Health Insurance',
     accountOrPolicyNumber: 'HLT-5509214',
     estimatedValue: 500000,
     status: 'Policy Active / Claim Guidance Available',
-    notes: '[DEMO DATA] Health Insurance Policy with coverage ₹5,00,000. Status: Policy Active / Claim Guidance Available.',
+    notes: '[DEMO DATA] Health Insurance Policy with coverage ₹5,00,000. Status: Active / Guidance Available.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    _id: 'demo_asset_5',
+    _id: 'demo_asset_6',
     userId: 'demo_user_123',
     deceasedId: 'demo_deceased_1',
     name: 'Government Scheme / Benefit',
@@ -96,21 +135,6 @@ export const DEMO_ASSETS: Asset[] = [
     estimatedValue: 300000,
     status: 'Eligibility/Claim Pending',
     notes: '[DEMO DATA] Government Pension Scheme / Benefit. Estimated benefit: ₹3,00,000. Status: Eligibility/Claim Pending.',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: 'demo_asset_6',
-    userId: 'demo_user_123',
-    deceasedId: 'demo_deceased_1',
-    name: 'Bank FD (Axis Bank Fixed Deposit)',
-    category: 'Fixed Deposit',
-    recordType: 'Asset',
-    institution: 'Axis Bank',
-    accountOrPolicyNumber: 'FD-9921048',
-    estimatedValue: 400000,
-    status: 'Claim Not Started',
-    notes: '[DEMO DATA] Bank Fixed Deposit (FD) at Axis Bank. Value: ₹4,00,000. Status: Claim Not Started.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -135,14 +159,14 @@ export const DEMO_ASSETS: Asset[] = [
     _id: 'demo_asset_8',
     userId: 'demo_user_123',
     deceasedId: 'demo_deceased_1',
-    name: 'Vehicle Loan',
+    name: 'Vehicle / Personal Loan',
     category: 'Vehicle Loan',
     recordType: 'Liability',
     institution: 'SBI Auto Loan',
     accountOrPolicyNumber: 'VL-773910',
-    estimatedValue: 250000,
+    estimatedValue: 150000,
     status: 'Outstanding',
-    notes: '[DEMO DATA] Vehicle Loan outstanding balance: ₹2,50,000 (Clearly marked demo value). Status: Outstanding.',
+    notes: '[DEMO DATA] Vehicle/Personal Loan outstanding balance: ₹1,50,000. Status: Outstanding.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -159,7 +183,7 @@ export const DEMO_ASSETS: Asset[] = [
     accountOrPolicyNumber: 'REC-RAKESH-01',
     estimatedValue: 30000,
     status: 'Recovery Pending',
-    notes: '[DEMO DATA] Loan given to Rakesh. Amount receivable: ₹30,000. Category: Friend/Relative Loan. Status: Recovery Pending.',
+    notes: '[DEMO DATA] Personal loan given to Rakesh. Receivable: ₹30,000. Status: Recovery Pending.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -174,7 +198,7 @@ export const DEMO_ASSETS: Asset[] = [
     accountOrPolicyNumber: 'REC-SHREYANSH-02',
     estimatedValue: 30000,
     status: 'Recovery Pending',
-    notes: '[DEMO DATA] Loan given to Shreyansh. Amount receivable: ₹30,000. Category: Friend/Relative Loan. Status: Recovery Pending.',
+    notes: '[DEMO DATA] Personal loan given to Shreyansh. Receivable: ₹30,000. Status: Recovery Pending.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -189,7 +213,7 @@ export const DEMO_ASSETS: Asset[] = [
     accountOrPolicyNumber: 'REC-RAHUL-ANUJ-03',
     estimatedValue: 50000,
     status: 'Recovery Pending',
-    notes: '[DEMO DATA] Combined personal loan given to Rahul + Anuj. Amount receivable: ₹50,000. Category: Personal Loan. Status: Recovery Pending.',
+    notes: '[DEMO DATA] Loan given to Rahul + Anuj. Receivable: ₹50,000. Status: Recovery Pending.',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -271,7 +295,7 @@ export const DEMO_DOCUMENTS: DocumentItem[] = [
     size: 1572864,
     status: 'Reviewed',
     extractedData: {
-      summary: 'Axis Bank Savings Account #AXIS-9102938410. Verified Closing Balance: ₹4,00,000.',
+      summary: 'Axis Bank Savings Account #AXIS-9102938410. Verified Balance: ₹4,00,000.',
       extractedNames: ['Rajesh Sharma'],
       extractedNumbers: ['AXIS-9102938410', '400000'],
       confidenceScore: 0.99,
@@ -291,7 +315,7 @@ export const DEMO_DOCUMENTS: DocumentItem[] = [
     size: 1258291,
     status: 'Reviewed',
     extractedData: {
-      summary: 'Axis Bank Fixed Deposit Certificate #FD-9921048. Principal Value: ₹4,00,000.',
+      summary: 'Axis Bank Fixed Deposit Certificate #FD-9921048. Principal: ₹4,00,000.',
       extractedNames: ['Rajesh Sharma'],
       extractedNumbers: ['FD-9921048', '400000'],
       confidenceScore: 0.98,
@@ -311,7 +335,7 @@ export const DEMO_DOCUMENTS: DocumentItem[] = [
     size: 943718,
     status: 'Reviewed',
     extractedData: {
-      summary: 'CDSL Demat Holding Statement for Reliance Industries / Jio Stocks. Portfolio Value: ₹2,00,000.',
+      summary: 'Demat Holding Statement for Reliance Industries / Jio Stocks. Portfolio Value: ₹2,00,000.',
       extractedNames: ['Rajesh Sharma'],
       extractedNumbers: ['RIL-JIO-982104', '200000'],
       confidenceScore: 0.97,
@@ -331,7 +355,7 @@ export const DEMO_DOCUMENTS: DocumentItem[] = [
     size: 1468006,
     status: 'Reviewed',
     extractedData: {
-      summary: 'HDFC Home Loan Account #HL-882190 Statement. Outstanding Principal: ₹4,00,000.',
+      summary: 'HDFC Home Loan Account #HL-882190. Outstanding Principal: ₹4,00,000.',
       extractedNames: ['Rajesh Sharma'],
       extractedNumbers: ['HL-882190', '400000'],
       confidenceScore: 0.98,
@@ -351,9 +375,9 @@ export const DEMO_DOCUMENTS: DocumentItem[] = [
     size: 1153433,
     status: 'Reviewed',
     extractedData: {
-      summary: 'SBI Vehicle Loan Agreement #VL-773910. Outstanding Loan Amount: ₹2,50,000.',
+      summary: 'SBI Vehicle Loan Agreement #VL-773910. Outstanding Loan: ₹1,50,000.',
       extractedNames: ['Rajesh Sharma'],
-      extractedNumbers: ['VL-773910', '250000'],
+      extractedNumbers: ['VL-773910', '150000'],
       confidenceScore: 0.96,
     },
     createdAt: new Date().toISOString(),
@@ -386,7 +410,7 @@ export const DEMO_CLAIMS: Claim[] = [
     _id: 'demo_claim_1',
     userId: 'demo_user_123',
     deceasedId: DEMO_DECEASED,
-    assetId: DEMO_ASSETS[2],
+    assetId: DEMO_ASSETS[3], // LIC Policy
     institution: 'Life Insurance Corporation of India (LIC)',
     claimType: 'Life Insurance Policy Settlement',
     claimReferenceNumber: 'LIC-CLAIM-2026-9812',
@@ -400,7 +424,7 @@ export const DEMO_CLAIMS: Claim[] = [
     _id: 'demo_claim_2',
     userId: 'demo_user_123',
     deceasedId: DEMO_DECEASED,
-    assetId: DEMO_ASSETS[4],
+    assetId: DEMO_ASSETS[5], // Govt scheme
     institution: 'Government of India / EPFO',
     claimType: 'Government Scheme Benefit Claim',
     claimReferenceNumber: 'GOV-CLAIM-2026-4412',
@@ -423,7 +447,7 @@ export const DEMO_CLAIM_STEPS: ClaimStep[] = [
 export const DEMO_CHECKLIST: ChecklistItem[] = [
   { _id: 'chk_1', claimId: 'demo_claim_1', name: 'Original Death Certificate', explanation: 'Attested Municipal Death Certificate of Late Rajesh Sharma', isRequired: true, isCompleted: true, associatedDocumentId: DEMO_DOCUMENTS[0] },
   { _id: 'chk_2', claimId: 'demo_claim_1', name: 'Original Life Insurance Policy Bond', explanation: 'Original policy bond #LIC-POL-10029384 for ₹1 Crore claim', isRequired: true, isCompleted: true, associatedDocumentId: DEMO_DOCUMENTS[1] },
-  { _id: 'chk_3', claimId: 'demo_claim_1', name: 'Nominee Identity & KYC Proof', explanation: 'Aadhaar Card and PAN Card of claimant nominee Ankit Sharma', isRequired: true, isCompleted: true },
+  { _id: 'chk_3', claimId: 'demo_claim_1', name: 'Nominee Identity & KYC Proof', explanation: 'Masked Aadhaar (XXXX XXXX 4821) and PAN (ABCDE****F) of nominee Ankit Sharma', isRequired: true, isCompleted: true },
   { _id: 'chk_4', claimId: 'demo_claim_1', name: 'Axis Bank Passbook / Cancelled Cheque', explanation: 'Nominee Axis Bank Account details for NEFT claim transfer', isRequired: true, isCompleted: true, associatedDocumentId: DEMO_DOCUMENTS[3] },
   { _id: 'chk_5', claimId: 'demo_claim_1', name: 'Claimant Statement Form', explanation: 'Mandatory death claim settlement form filled & signed', isRequired: true, isCompleted: false },
 ];
@@ -442,7 +466,7 @@ export const DEMO_NOTIFICATIONS: NotificationItem[] = [
     _id: 'notif_2',
     userId: 'demo_user_123',
     title: '[DEMO MODE] Pending Loans Alert',
-    message: '2 outstanding liabilities recorded: Home Loan (₹4,00,000) & Vehicle Loan (₹2,50,000).',
+    message: '2 outstanding liabilities recorded: Home Loan (₹4,00,000) & Vehicle Loan (₹1,50,000). Total ₹5.50 Lakhs.',
     type: 'info',
     isRead: false,
     createdAt: new Date().toISOString(),
@@ -465,7 +489,7 @@ export const DEMO_DASHBOARD: DashboardData = {
     totalAssets: 6,
     totalAssetsValue: 11800000, // ₹1,18,00,000 (₹1.18 Crore)
     totalLiabilitiesCount: 2,
-    totalLiabilitiesValue: 650000, // ₹6,50,000 (₹6.5 Lakhs)
+    totalLiabilitiesValue: 550000, // ₹5,50,000 (₹5.50 Lakhs)
     totalRecoverableCount: 3,
     totalRecoverableValue: 110000, // ₹1,10,000 (₹1.1 Lakhs)
     potentialAssets: 1,
@@ -479,8 +503,8 @@ export const DEMO_DASHBOARD: DashboardData = {
     {
       id: 'att_1',
       type: 'warning',
-      title: 'Action Needed: Life Insurance Claim Not Started',
-      message: 'Sum assured of ₹1,00,00,000 (₹1 Crore) is pending claim initiation.',
+      title: 'Action Needed: Life Insurance Claim Ready',
+      message: 'Sum assured of ₹1,00,00,000 (₹1 Crore) is ready for claim submission.',
       actionLabel: 'Initiate Claim',
       link: '/claims',
     },
@@ -488,7 +512,7 @@ export const DEMO_DASHBOARD: DashboardData = {
       id: 'att_2',
       type: 'info',
       title: 'Money to Recover Pending',
-      message: '3 friends/relatives owe total ₹1,10,000 (Rakesh ₹30k, Shreyansh ₹30k, Rahul + Anuj ₹50k).',
+      message: '3 loans pending recovery total ₹1,10,000 (Rakesh ₹30k, Shreyansh ₹30k, Rahul + Anuj ₹50k).',
       actionLabel: 'View Recoverables',
       link: '/assets',
     },
@@ -496,23 +520,23 @@ export const DEMO_DASHBOARD: DashboardData = {
   recentActivity: [
     {
       _id: 'act_1',
-      action: 'Life Insurance Policy bond verified in DEMO profile',
-      entityType: 'Insurance',
-      details: 'Claim Sum Assured ₹1,00,00,000 (₹1 Crore) recorded.',
+      action: 'Nominee Identity Verified (Simulated Video KYC)',
+      entityType: 'User',
+      details: 'Ankit Sharma (Son/Nominee) - Masked Aadhaar: XXXX XXXX 4821',
       createdAt: new Date().toISOString(),
     },
     {
       _id: 'act_2',
-      action: 'Axis Bank Savings & Bank FD certificates loaded',
-      entityType: 'Bank Account',
-      details: 'Axis Bank Savings ₹4,00,000 + Bank FD ₹4,00,000.',
+      action: 'AI Discovery Completed: Financial Footprint Found',
+      entityType: 'DeceasedProfile',
+      details: 'Total Assets: ₹1.18 Cr+ | Insurance: ₹1.05 Cr+ | Loans: ₹5.50 L | Recoverables: ₹1.10 L',
       createdAt: new Date().toISOString(),
     },
     {
       _id: 'act_3',
-      action: 'Home Loan & Vehicle Loan liabilities logged',
-      entityType: 'Liability',
-      details: 'Outstanding Home Loan ₹4,00,000 & Vehicle Loan ₹2,50,000.',
+      action: 'LIC Life Insurance Policy bond verified in DEMO profile',
+      entityType: 'Insurance',
+      details: 'Claim Sum Assured ₹1,00,00,000 (₹1 Crore) recorded.',
       createdAt: new Date().toISOString(),
     },
   ],
@@ -521,97 +545,90 @@ export const DEMO_DASHBOARD: DashboardData = {
 export const getDemoAiResponse = (userQuery: string): { reply: string; confidence: number; suggestedActions?: string[]; safetyNotice?: string } => {
   const q = userQuery.toLowerCase();
 
-  // 1. Life Insurance Query
-  if (q.includes('life insurance') || q.includes('life policy') || q.includes('claim kitna') || q.includes('insurance claim') || q.includes('1 crore') || q.includes('lic')) {
+  // 1. Assets Found Query
+  if (q.includes('what assets') || q.includes('assets found') || q.includes('total assets') || q.includes('what was found') || q.includes('found assets')) {
     return {
-      reply: 'Demo profile ke according life insurance policy ka claim value ₹1 crore (₹1,00,00,000) hai.\n\n• Policy: Life Insurance Policy\n• Sum Assured / Claim Value: ₹1,00,00,000\n• Status: Claim Not Started\n• Institution: LIC of India',
+      reply: 'Based on the demo financial profile, the following 6 financial assets were discovered (Total Value: ₹1.18 Cr+):\n\n1. 🏢 LIC Term Life Insurance: ₹1,00,00,000 (Status: Claim Ready)\n2. 🏥 Star Health Insurance Policy: ₹5,00,000 Coverage (Status: Active Policy)\n3. 🏦 Axis Bank Savings Account: ₹4,00,000 Balance (Status: Confirmed)\n4. 📈 Axis Bank Fixed Deposit: ₹4,00,000 Principal (Status: Claim Not Started)\n5. 📜 Government Scheme / Benefit: ₹3,00,000 (Status: Eligibility/Claim Pending)\n6. 📊 Reliance Industries / Jio Stocks: ₹2,00,000 Value (Status: Confirmed)',
       confidence: 0.99,
-      suggestedActions: ['Start Life Insurance Claim', 'View Policy Document', 'Show All Assets'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only. No MongoDB or real account affected.',
+      suggestedActions: ['How do I claim the ₹1 crore life insurance?', 'What documents do I need?', 'Which claim should I complete first?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data for hackathon demonstration.',
     };
   }
 
-  // 2. Father's Loans / Liabilities Query
-  if (q.includes('loan') || q.includes('father') || q.includes('pending loan') || q.includes('liabilit') || q.includes('karz') || q.includes('home loan') || q.includes('vehicle loan') || q.includes('udhaar')) {
+  // 2. Insurance Coverage Query
+  if (q.includes('insurance coverage') || q.includes('how much insurance') || q.includes('insurance total') || q.includes('policy coverage')) {
     return {
-      reply: 'Demo profile ke according aapke father ke 2 loans pending (liabilities) hain:\n\n1. Home Loan: ₹4,00,000 (Status: Outstanding)\n2. Vehicle Loan: ₹2,50,000 (Status: Outstanding)\n\nTotal Pending Liabilities: ₹6,50,000.',
-      confidence: 0.98,
-      suggestedActions: ['View Home Loan Statement', 'View Vehicle Loan Document', 'Check All Liabilities'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
-    };
-  }
-
-  // 3. Money to Recover Query
-  if (q.includes('paise') || q.includes('kaun kaun') || q.includes('dena hai') || q.includes('lene hai') || q.includes('recover') || q.includes('rakesh') || q.includes('shreyansh') || q.includes('rahul') || q.includes('anuj')) {
-    return {
-      reply: 'Demo profile ke according paise dene wale / recover hone wale (receivables) ka detail is tarah hai:\n\n1. Rakesh: ₹30,000 (Category: Friend/Relative Loan | Status: Recovery Pending)\n2. Shreyansh: ₹30,000 (Category: Friend/Relative Loan | Status: Recovery Pending)\n3. Rahul + Anuj: ₹50,000 (Category: Personal Loan | Status: Recovery Pending)\n\nTotal Money to be Recovered: ₹1,10,000.',
+      reply: 'Based on the demo financial profile, total insurance coverage available is ₹1.05 Cr+:\n\n1. 🏢 Life Insurance Policy (LIC): ₹1,00,00,000 (₹1 Crore Sum Assured) - Status: Claim Ready\n2. 🏥 Health Insurance Policy (Star Health): ₹5,00,000 Coverage - Status: Policy Active / Claim Guidance Available',
       confidence: 0.99,
-      suggestedActions: ['View Money to Recover', 'Send Recovery Reminder', 'Show All Receivables'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
+      suggestedActions: ['How do I claim the ₹1 crore life insurance?', 'What documents do I need?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
     };
   }
 
-  // 4. Axis Bank / FD Query
-  if (q.includes('axis') || q.includes('bank account') || q.includes('bank balance') || q.includes('fd') || q.includes('fixed deposit')) {
+  // 3. Claiming 1 Crore Life Insurance Query
+  if (q.includes('claim the') || q.includes('1 crore') || q.includes('how do i claim') || q.includes('claim lic') || q.includes('claim life insurance')) {
     return {
-      reply: 'Demo profile mein Axis Bank accounts:\n\n1. Axis Bank Savings Account Balance: ₹4,00,000 (Status: Confirmed)\n2. Bank FD (Axis Bank Fixed Deposit): ₹4,00,000 (Status: Claim Not Started)\n\nTotal Axis Bank Assets: ₹8,00,000.',
-      confidence: 0.97,
-      suggestedActions: ['View Axis Bank Statement', 'View FD Certificate'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
+      reply: 'Based on the demo financial profile, here is how to claim the ₹1,00,00,000 (₹1 Crore) LIC Life Insurance policy:\n\n1. 📋 Gather Required Documents:\n   • Original Municipal Death Certificate of Late Rajesh Sharma\n   • Original Policy Bond (#LIC-POL-10029384)\n   • Nominee ID Proof (Masked Aadhaar: XXXX XXXX 4821, PAN: ABCDE****F)\n   • Nominee Cancelled Cheque / Bank Passbook for NEFT credit\n\n2. ✍️ Submit Form 3783 (Claimant Statement) & Form 3801 at servicing branch.\n3. ⏱️ Processing Time: 15 to 30 working days after Video KYC & verification.\n4. 🚀 Click "Start Claim" on the LIC Policy card in your dashboard to track step-by-step progress.',
+      confidence: 0.99,
+      suggestedActions: ['What documents do I need?', 'Which claim should I complete first?', 'Start Claim Journey'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
     };
   }
 
-  // 5. Health Insurance Query
-  if (q.includes('health')) {
+  // 4. Documents Needed Query
+  if (q.includes('what documents') || q.includes('documents needed') || q.includes('document checklist') || q.includes('required documents')) {
     return {
-      reply: 'Demo profile ke Health Insurance Policy details:\n\n• Coverage: ₹5,00,000\n• Provider: Star Health Insurance\n• Status: Policy Active / Claim Guidance Available',
-      confidence: 0.97,
-      suggestedActions: ['View Health Insurance Policy', 'Get Claim Guidance'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
-    };
-  }
-
-  // 6. Government Scheme Query
-  if (q.includes('govt') || q.includes('government') || q.includes('scheme') || q.includes('yojana')) {
-    return {
-      reply: 'Demo profile ke Government Scheme / Benefit details:\n\n• Estimated Benefit: ₹3,00,000\n• Status: Eligibility/Claim Pending',
-      confidence: 0.96,
-      suggestedActions: ['View Government Scheme Document', 'Check Claim Eligibility'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
-    };
-  }
-
-  // 7. Stocks / Reliance / Jio Query
-  if (q.includes('stock') || q.includes('share') || q.includes('reliance') || q.includes('jio')) {
-    return {
-      reply: 'Demo profile ke Stock Holdings:\n\n• Reliance Industries / Jio-related stock holdings\n• Demo Value: ₹2,00,000\n• Status: Confirmed',
-      confidence: 0.97,
-      suggestedActions: ['View Stock Statement'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
-    };
-  }
-
-  // 8. Documents Query
-  if (q.includes('document') || q.includes('file') || q.includes('kagaz')) {
-    return {
-      reply: 'Demo profile mein 9 corresponding document entries present hain:\n1. Death Certificate\n2. Life Insurance Policy\n3. Health Insurance Policy\n4. Axis Bank Statement\n5. FD Certificate\n6. Stock/Investment Statement\n7. Home Loan Statement\n8. Vehicle Loan Document\n9. Government Scheme Document',
+      reply: 'Based on the demo financial profile, the essential documents required for overall financial closure are:\n\n1. Municipal Death Certificate of Deceased (Late Rajesh Sharma)\n2. Nominee Identity Proofs (Masked Aadhaar: XXXX XXXX 4821 & PAN: ABCDE****F)\n3. Original Policy Bonds / Fixed Deposit Receipts (LIC Bond #LIC-POL-10029384, Axis FD #FD-9921048)\n4. Bank Statements / Passbooks (Axis Bank #AXIS-9102938410)\n5. Demat Holding Statement (Reliance / Jio Stocks #RIL-JIO-982104)\n6. Loan Statements (HDFC Home Loan #HL-882190 & SBI Vehicle Loan #VL-773910)',
       confidence: 0.98,
-      suggestedActions: ['View Documents Page'],
-      safetyNotice: 'DEMO MODE: Sample demonstration data only.',
+      suggestedActions: ['How do I claim the ₹1 crore life insurance?', 'Which claim should I complete first?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
+    };
+  }
+
+  // 5. Loan / Liabilities Query
+  if (q.includes('loan') || q.includes('pending loan') || q.includes('liabilit') || q.includes('karz') || q.includes('home loan') || q.includes('vehicle loan') || q.includes('outstanding loan')) {
+    return {
+      reply: 'Based on the demo financial profile, there are 2 outstanding loans totaling ₹5,50,000:\n\n1. 🏠 Home Loan (HDFC Housing Finance): ₹4,00,000 (Status: Outstanding)\n2. 🚗 Vehicle / Personal Loan (SBI Auto Loan): ₹1,50,000 (Status: Outstanding)\n\nTotal Pending Liabilities: ₹5,50,000.',
+      confidence: 0.98,
+      suggestedActions: ['How much money do I need to recover?', 'Which claim should I complete first?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
+    };
+  }
+
+  // 6. Money to Recover Query
+  if (q.includes('money do i need to recover') || q.includes('recover') || q.includes('receivables') || q.includes('rakesh') || q.includes('shreyansh') || q.includes('rahul')) {
+    return {
+      reply: 'Based on the demo financial profile, total money to be recovered is ₹1,10,00,00 (₹1.10 Lakhs across 3 receivables):\n\n1. 👤 Rakesh: ₹30,000 (Friend/Relative Loan | Status: Recovery Pending)\n2. 👤 Shreyansh: ₹30,000 (Friend/Relative Loan | Status: Recovery Pending)\n3. 👥 Rahul + Anuj: ₹50,000 (Personal Loan | Status: Recovery Pending)\n\nTotal Money to Recover: ₹1,10,000.',
+      confidence: 0.99,
+      suggestedActions: ['What assets were found?', 'Which claim should I complete first?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
+    };
+  }
+
+  // 7. Priority Claim Query
+  if (q.includes('first') || q.includes('priority') || q.includes('complete first') || q.includes('which claim')) {
+    return {
+      reply: 'Based on the demo financial profile, we recommend prioritizing claims in this order:\n\n1. 🥇 LIC Life Insurance Policy (₹1,00,00,000): Highest value asset (Claim Ready). All documents & Video KYC are verified.\n2. 🥈 Axis Bank Savings & Fixed Deposit (Total ₹8,00,000): Quick settlement via direct nominee transfer.\n3. 🥉 Government Scheme / Pension Benefit (₹3,00,000): Requires form submission.\n4. 💳 HDFC Home Loan (₹4,00,000): Notify lender to check if loan protection insurance applies.',
+      confidence: 0.97,
+      suggestedActions: ['How do I claim the ₹1 crore life insurance?', 'What documents do I need?'],
+      safetyNotice: 'DEMO MODE — Based on simulated financial profile data.',
     };
   }
 
   // Fallback Overview Response
   return {
-    reply: 'Late Rajesh Sharma (DEMO Profile) sample financial portfolio overview:\n\n💰 Total Assets: ₹1,18,00,000 (₹1.18 Crore across 6 items)\n• Life Insurance Policy: ₹1,00,00,000 (Claim Not Started)\n• Axis Bank Account: ₹4,00,000 (Confirmed)\n• Bank FD (Axis Bank FD): ₹4,00,000 (Claim Not Started)\n• Health Insurance Policy: ₹5,00,000 Coverage (Policy Active)\n• Government Scheme / Benefit: ₹3,00,000 (Claim Pending)\n• Reliance / Jio Stocks: ₹2,00,000 (Confirmed)\n\n💳 Liabilities: ₹6,50,000 (2 Items)\n• Home Loan: ₹4,00,000 (Outstanding)\n• Vehicle Loan: ₹2,50,000 (Outstanding)\n\n🤝 Money to Recover: ₹1,10,000 (3 Items)\n• Rakesh: ₹30,000 (Recovery Pending)\n• Shreyansh: ₹30,000 (Recovery Pending)\n• Rahul + Anuj: ₹50,000 (Recovery Pending)',
+    reply: 'Based on the demo financial profile of Late Rajesh Sharma:\n\n💰 Total Assets Found: ₹1.18 Cr+ (6 Items)\n• LIC Term Life Insurance: ₹1,00,00,000 (Claim Ready)\n• Star Health Insurance: ₹5,00,000 Coverage\n• Axis Bank Savings: ₹4,00,000\n• Axis Bank Fixed Deposit: ₹4,00,000\n• Government Scheme / Benefit: ₹3,00,000\n• Reliance / Jio Stocks: ₹2,00,000\n\n💳 Outstanding Liabilities: ₹5.50 Lakhs (Home Loan ₹4.00L, Vehicle Loan ₹1.50L)\n🤝 Money to Recover: ₹1.10 Lakhs (Rakesh ₹30k, Shreyansh ₹30k, Rahul + Anuj ₹50k)',
     confidence: 0.95,
     suggestedActions: [
-      'Life insurance ka claim kitna hai?',
-      'Mere father ke kitne loans pending hain?',
-      'Kaun kaun paise dena hai?',
-      'Show total assets',
+      'What assets were found?',
+      'How much insurance coverage is available?',
+      'How do I claim the ₹1 crore life insurance?',
+      'What documents do I need?',
+      'How much loan is still pending?',
+      'How much money do I need to recover?',
+      'Which claim should I complete first?',
     ],
-    safetyNotice: 'DEMO MODE: All information shown is sample demonstration data.',
+    safetyNotice: 'DEMO MODE — All responses use simulated demonstration data for prototype showcase.',
   };
 };
 
@@ -619,6 +636,7 @@ export const initializeDemoStorage = () => {
   localStorage.setItem('finclosure_is_demo', 'true');
   localStorage.setItem('finclosure_token', 'demo_session_token_xyz987');
   localStorage.setItem('finclosure_user', JSON.stringify(DEMO_USER));
+  localStorage.setItem('finclosure_demo_identity', JSON.stringify(DEMO_IDENTITY_VERIFICATION));
   localStorage.setItem('finclosure_demo_deceased', JSON.stringify(DEMO_DECEASED));
   localStorage.setItem('finclosure_demo_assets', JSON.stringify(DEMO_ASSETS));
   localStorage.setItem('finclosure_demo_documents', JSON.stringify(DEMO_DOCUMENTS));
@@ -630,9 +648,11 @@ export const clearDemoStorage = () => {
   localStorage.removeItem('finclosure_is_demo');
   localStorage.removeItem('finclosure_token');
   localStorage.removeItem('finclosure_user');
+  localStorage.removeItem('finclosure_demo_identity');
   localStorage.removeItem('finclosure_demo_deceased');
   localStorage.removeItem('finclosure_demo_assets');
   localStorage.removeItem('finclosure_demo_documents');
   localStorage.removeItem('finclosure_demo_claims');
   localStorage.removeItem('finclosure_demo_notifications');
 };
+

@@ -48,6 +48,7 @@ export type AssetStatus =
   | 'Known'
   | 'Potential'
   | 'Confirmed'
+  | 'Claim Ready'
   | 'Claim Started'
   | 'Claim Not Started'
   | 'Policy Active / Claim Guidance Available'

@@ -28,10 +28,13 @@ export const AiAssistantPage: React.FC = () => {
         : 'Hello. I am your FinClosure AI Assistant. I am here to help you navigate financial asset discovery, document checklists, and claim steps. How can I assist you today?',
       suggestedActions: isDemoMode
         ? [
-            'Life insurance ka claim kitna hai?',
-            'Mere father ke kitne loans pending hain?',
-            'Kaun kaun paise dena hai?',
-            'Show total assets',
+            'What assets were found?',
+            'How much insurance coverage is available?',
+            'How do I claim the ₹1 crore life insurance?',
+            'What documents do I need?',
+            'How much loan is still pending?',
+            'How much money do I need to recover?',
+            'Which claim should I complete first?',
           ]
         : [
             'What should I focus on today?',
@@ -185,7 +188,7 @@ export const AiAssistantPage: React.FC = () => {
             onChange={(e) => setInputQuery(e.target.value)}
             placeholder={
               isDemoMode
-                ? "Try: 'Life insurance ka claim kitna hai?' or 'Mere father ke kitne loans pending hain?'"
+                ? "Try: 'What assets were found?' or 'How do I claim the ₹1 crore life insurance?'"
                 : "Ask about missing documents, claim steps, or what to focus on today..."
             }
             className="flex-1 px-3.5 py-2.5 sm:py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"

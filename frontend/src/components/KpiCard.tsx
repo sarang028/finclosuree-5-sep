@@ -7,7 +7,7 @@ interface KpiCardProps {
   value: string;
   subtitle: string;
   icon: LucideIcon;
-  colorScheme: 'emerald' | 'rose' | 'blue' | 'purple';
+  colorScheme: 'emerald' | 'rose' | 'blue' | 'purple' | 'amber';
   linkTo: string;
 }
 
@@ -41,6 +41,11 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       cardBg: 'bg-white',
       iconBg: 'bg-purple-100/90 text-purple-800 border-purple-200',
       btnBg: 'bg-purple-50 text-purple-800 hover:bg-purple-100 border-purple-200',
+    },
+    amber: {
+      cardBg: 'bg-white',
+      iconBg: 'bg-amber-100/90 text-amber-800 border-amber-200',
+      btnBg: 'bg-amber-50 text-amber-800 hover:bg-amber-100 border-amber-200',
     },
   };
 
