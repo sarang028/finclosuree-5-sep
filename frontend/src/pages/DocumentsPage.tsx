@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { documentApi, aiApi, deceasedApi } from '../services/apiServices';
 import { DocumentItem, DocumentCategory } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import {
   FileText,
   FileUp,
@@ -11,6 +12,7 @@ import {
   X,
   Search,
   ChevronRight,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const DocumentsPage: React.FC = () => {
@@ -22,6 +24,7 @@ export const DocumentsPage: React.FC = () => {
   const [showSearch, setShowSearch] = useState(false);
 
   const { t } = useLanguage();
+  const { isDemoMode } = useAuth();
 
   // Upload Modal State
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -98,7 +101,7 @@ export const DocumentsPage: React.FC = () => {
     setActiveAnalysisDoc(doc);
     try {
       const res = await aiApi.analyzeDocument(doc._id);
-      setActiveAnalysisDoc(res.document);
+      setActiveAnalysisDoc(res.document || doc);
       fetchDocuments();
     } catch (err) {
       console.error('[AI Analysis Error]', err);
@@ -107,23 +110,46 @@ export const DocumentsPage: React.FC = () => {
     }
   };
 
+  const filteredDocs = documents.filter((doc) => {
+    const matchesSearch = doc.name.toLowerCase().includes(search.toLowerCase()) || doc.category.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+
+    if (activeTab === 'All') return true;
+    if (activeTab === 'Insurance') return doc.category.includes('Insurance');
+    if (activeTab === 'Bank') return doc.category.includes('Bank');
+    if (activeTab === 'Identity') return doc.category === 'Death Certificate' || doc.category === 'Identity Proof';
+    return true;
+  });
+
   const categoriesTabs = [
-    { label: 'All', count: documents.length || 18 },
-    { label: 'KYC', count: 6 },
-    { label: 'Financial', count: 7 },
-    { label: 'Legal', count: 5 },
+    { label: 'All', count: documents.length },
+    { label: 'Insurance', count: documents.filter(d => d.category.includes('Insurance')).length },
+    { label: 'Bank', count: documents.filter(d => d.category.includes('Bank')).length },
+    { label: 'Identity', count: documents.filter(d => d.category === 'Death Certificate' || d.category === 'Identity Proof').length },
   ];
 
   return (
     <div className="space-y-5">
-      {/* Top Header matching Reference Screen 6 */}
+      {/* Top Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-black text-slate-900 tracking-tight">Documents</h1>
+        <div>
+          <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center">
+            Documents Vault
+            {isDemoMode && (
+              <span className="ml-2 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 border border-amber-600">
+                DEMO MODE
+              </span>
+            )}
+          </h1>
+          <p className="text-xs font-semibold text-slate-500 mt-0.5">
+            Verified financial & legal documents (9 Demo Entries)
+          </p>
+        </div>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowSearch(!showSearch)}
-            className="p-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl"
+            className="p-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl shadow-2xs"
             title="Search Documents"
           >
             <Search className="w-4 h-4" />
@@ -138,13 +164,13 @@ export const DocumentsPage: React.FC = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search documents by name..."
-            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-finclosure-800"
+            placeholder="Search documents by name or category..."
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-finclosure-800 shadow-2xs"
           />
         </div>
       )}
 
-      {/* Primary CTA Button matching Reference Screen 6 */}
+      {/* Primary CTA Button */}
       <button
         onClick={() => setIsUploadModalOpen(true)}
         className="w-full py-3 px-4 bg-finclosure-800 hover:bg-finclosure-900 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center space-x-1.5"
@@ -153,7 +179,7 @@ export const DocumentsPage: React.FC = () => {
         <span>Upload Document</span>
       </button>
 
-      {/* Category Tabs matching Reference Screen 6 */}
+      {/* Category Tabs */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
         {categoriesTabs.map((tab) => (
           <button
@@ -170,28 +196,41 @@ export const DocumentsPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Documents List Cards matching Reference Screen 6 */}
+      {/* Documents List Cards */}
       {isLoading ? (
-        <div className="text-center py-12 text-slate-500 text-xs">Loading documents...</div>
-      ) : documents.length > 0 ? (
+        <div className="text-center py-12 text-slate-500 text-xs">Loading documents vault...</div>
+      ) : filteredDocs.length > 0 ? (
         <div className="space-y-3">
-          {documents.map((doc) => (
+          {filteredDocs.map((doc) => (
             <div
               key={doc._id}
               className="bg-white border border-slate-200 p-4 rounded-2xl shadow-2xs flex items-center justify-between hover:border-slate-300 transition-all cursor-pointer"
               onClick={() => handleRunAiAnalysis(doc)}
             >
-              <div className="flex items-center space-x-3">
-                {/* File Icon matching Reference Screen 6 (Red square with document icon) */}
+              <div className="flex items-center space-x-3.5">
+                {/* File Icon Badge */}
                 <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center shrink-0">
                   <FileText className="w-5 h-5" />
                 </div>
 
-                <div>
-                  <h3 className="text-xs font-extrabold text-slate-900">{doc.name}</h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Uploaded on {new Date(doc.createdAt).toLocaleDateString()} • PDF - {(doc.size ? (doc.size / (1024 * 1024)).toFixed(1) : '1.2')} MB
+                <div className="space-y-0.5">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-xs font-extrabold text-slate-900">{doc.name}</h3>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
+                      {doc.category}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-500">
+                    PDF • {(doc.size ? (doc.size / (1024 * 1024)).toFixed(1) : '1.2')} MB
+                    {doc.extractedData?.summary && ` • ${doc.extractedData.summary}`}
                   </p>
+
+                  {isDemoMode && (
+                    <span className="text-[9px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 inline-block mt-0.5">
+                      ✓ AI Verified Demo File
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -201,7 +240,7 @@ export const DocumentsPage: React.FC = () => {
                     e.stopPropagation();
                     handleDelete(doc._id);
                   }}
-                  className="text-slate-400 hover:text-rose-600 p-1"
+                  className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-slate-100"
                   title="Delete Document"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -214,9 +253,9 @@ export const DocumentsPage: React.FC = () => {
       ) : (
         <div className="bg-white border border-slate-200 p-8 rounded-2xl text-center text-slate-500">
           <FileText className="w-10 h-10 text-finclosure-800 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-slate-900 mb-1">No documents uploaded</h3>
+          <h3 className="text-sm font-bold text-slate-900 mb-1">No documents found</h3>
           <p className="text-xs text-slate-500 max-w-xs mx-auto mb-4">
-            Upload Aadhaar, PAN, death certificates or policy documents for financial closure.
+            Upload death certificates, policy bonds or bank statements for financial closure.
           </p>
           <button
             onClick={() => setIsUploadModalOpen(true)}
@@ -227,7 +266,7 @@ export const DocumentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Upload Document Modal */}
+      {/* Upload Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white max-w-md w-full p-6 rounded-3xl relative space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200 shadow-xl">
@@ -246,7 +285,7 @@ export const DocumentsPage: React.FC = () => {
                   required
                   value={docName}
                   onChange={(e) => setDocName(e.target.value)}
-                  placeholder="e.g. Aadhaar Card"
+                  placeholder="e.g. Life Insurance Policy Bond"
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800 focus:outline-none"
                 />
               </div>
@@ -258,11 +297,11 @@ export const DocumentsPage: React.FC = () => {
                   onChange={(e) => setDocCategory(e.target.value as DocumentCategory)}
                   className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:border-finclosure-800 focus:outline-none"
                 >
-                  <option value="Identity Proof">KYC / Identity Proof</option>
                   <option value="Death Certificate">Death Certificate</option>
-                  <option value="Bank Document">Financial / Bank Document</option>
-                  <option value="Legal Heir Proof">Legal Document</option>
-                  <option value="Insurance Document">Insurance Policy</option>
+                  <option value="Insurance Document">Insurance Document</option>
+                  <option value="Bank Document">Bank / Financial Document</option>
+                  <option value="Investment Document">Stock / Investment Document</option>
+                  <option value="Identity Proof">KYC / Identity Proof</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
@@ -290,7 +329,7 @@ export const DocumentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* AI Document Extraction Modal */}
+      {/* AI Extraction Modal */}
       {activeAnalysisDoc && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white max-w-lg w-full p-6 rounded-3xl relative space-y-4 max-h-[90vh] overflow-y-auto border border-slate-200 shadow-xl">
@@ -304,30 +343,49 @@ export const DocumentsPage: React.FC = () => {
               </button>
             </div>
 
-            {isAnalyzing ? (
-              <div className="py-8 text-center text-slate-500 text-xs">
-                <div className="w-8 h-8 border-4 border-finclosure-800 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                AI is reading document content...
+            <div className="space-y-4 text-xs">
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold block">AI Extracted Summary</span>
+                <p className="text-slate-900 font-semibold leading-relaxed">
+                  {activeAnalysisDoc.extractedData?.summary || 'Document verified successfully and attached to DEMO financial portfolio.'}
+                </p>
               </div>
-            ) : (
-              <div className="space-y-4 text-xs">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 font-bold block mb-1">Extracted Summary</span>
-                  <p className="text-slate-900 font-medium">{activeAnalysisDoc.extractedData?.summary || 'Document verified successfully. Ready for claim attachment.'}</p>
-                </div>
 
-                <div className="flex justify-end pt-2">
-                  <a
-                    href={activeAnalysisDoc.fileUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-4 py-2 bg-finclosure-800 text-white font-bold text-xs rounded-xl"
-                  >
-                    View Original File
-                  </a>
+              {activeAnalysisDoc.extractedData?.extractedNames && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-slate-500 font-bold block mb-1">Names Found</span>
+                  <div className="flex flex-wrap gap-1">
+                    {activeAnalysisDoc.extractedData.extractedNames.map((n, i) => (
+                      <span key={i} className="px-2 py-0.5 rounded bg-white text-slate-800 font-semibold border border-slate-200">
+                        {n}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {activeAnalysisDoc.extractedData?.extractedNumbers && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-slate-500 font-bold block mb-1">Reference Numbers / Amounts</span>
+                  <div className="flex flex-wrap gap-1">
+                    {activeAnalysisDoc.extractedData.extractedNumbers.map((num, i) => (
+                      <span key={i} className="px-2 py-0.5 rounded bg-white font-mono text-slate-900 font-bold border border-slate-200">
+                        {num}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setActiveAnalysisDoc(null)}
+                  className="px-4 py-2 bg-finclosure-800 text-white font-bold text-xs rounded-xl"
+                >
+                  Close Document Viewer
+                </button>
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}

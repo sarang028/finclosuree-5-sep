@@ -20,6 +20,7 @@ import {
   DEMO_CHECKLIST,
   DEMO_NOTIFICATIONS,
   DEMO_DASHBOARD,
+  getDemoAiResponse,
 } from './demoService';
 
 const isDemo = () => typeof window !== 'undefined' && localStorage.getItem('finclosure_is_demo') === 'true';
@@ -236,7 +237,10 @@ export const aiApi = {
     return res.data;
   },
   chat: async (userQuery: string, deceasedId?: string, language?: string) => {
-    if (isDemo()) return { response: { text: `[DEMO MODE AI ASSISTANT] Regarding Late Rajesh Sharma's portfolio: You have ₹50.25 Lakhs total assets across LIC, HDFC, and SBI. LIC Claim #LIC-CLAIM-2026-9812 is currently 75% complete under Divisional Verification.`, confidence: 0.96 } };
+    if (isDemo()) {
+      const demoRes = getDemoAiResponse(userQuery);
+      return { response: demoRes };
+    }
     const res = await apiClient.post<{ response: any }>('/ai/chat', { userQuery, deceasedId, language });
     return res.data;
   },

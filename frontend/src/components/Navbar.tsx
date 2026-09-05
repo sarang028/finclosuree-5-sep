@@ -1,10 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ShieldCheck, HeartHandshake, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { HeartHandshake, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, startDemo } = useAuth();
+  const navigate = useNavigate();
+
+  const handleStartDemo = () => {
+    startDemo();
+    navigate('/dashboard');
+  };
 
   return (
     <header className="sticky top-0 z-50 glass-card border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
@@ -38,7 +44,18 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          {!isAuthenticated && (
+            <button
+              onClick={handleStartDemo}
+              className="inline-flex items-center px-3.5 py-1.5 text-xs font-bold text-teal-300 bg-teal-950/90 hover:bg-teal-900 border border-teal-700/60 rounded-lg transition-all shadow-xs"
+              title="Instant Access Demo Account"
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-teal-400 animate-pulse" />
+              <span>Start Demo</span>
+            </button>
+          )}
+
           {isAuthenticated ? (
             <Link
               to="/dashboard"

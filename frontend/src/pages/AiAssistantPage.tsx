@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { aiApi } from '../services/apiServices';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { TalkingAgentModal } from '../components/TalkingAgentModal';
 import { Bot, Send, Sparkles, Shield, Mic } from 'lucide-react';
 
@@ -15,21 +16,32 @@ interface ChatMessage {
 
 export const AiAssistantPage: React.FC = () => {
   const { language, t } = useLanguage();
+  const { isDemoMode } = useAuth();
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome',
       sender: 'assistant',
-      text: 'Hello. I am your FinClosure AI Assistant. I am here to help you navigate financial asset discovery, document checklists, and claim steps. How can I assist you today?',
-      suggestedActions: [
-        'What should I focus on today?',
-        'Which documents are missing?',
-        'How do I prepare my insurance claim?',
-        'Which assets have I not started claiming?',
-      ],
-      safetyNotice:
-        'FinClosure AI is an intelligence assistant layer. Always verify exact policy guidelines with authorized officers at the concerned institution.',
+      text: isDemoMode
+        ? 'Namaste! I am your FinClosure AI Assistant. I have loaded Late Rajesh Sharma\'s DEMO financial profile (6 Assets, 2 Liabilities, 3 Receivables, 9 Documents). Ask me anything about policy claim values, pending loans, or money to recover!'
+        : 'Hello. I am your FinClosure AI Assistant. I am here to help you navigate financial asset discovery, document checklists, and claim steps. How can I assist you today?',
+      suggestedActions: isDemoMode
+        ? [
+            'Life insurance ka claim kitna hai?',
+            'Mere father ke kitne loans pending hain?',
+            'Kaun kaun paise dena hai?',
+            'Show total assets',
+          ]
+        : [
+            'What should I focus on today?',
+            'Which documents are missing?',
+            'How do I prepare my insurance claim?',
+            'Which assets have I not started claiming?',
+          ],
+      safetyNotice: isDemoMode
+        ? 'DEMO MODE: Simulated AI guidance on sample portfolio records only.'
+        : 'FinClosure AI is an intelligence assistant layer. Always verify exact policy guidelines with authorized officers at the concerned institution.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -54,14 +66,15 @@ export const AiAssistantPage: React.FC = () => {
 
     try {
       const res = await aiApi.chat(q, undefined, language);
-      const replyText = typeof res.response === 'string' ? res.response : res.response?.reply || JSON.stringify(res.response);
+      const replyObj = res.response;
+      const replyText = typeof replyObj === 'string' ? replyObj : replyObj?.reply || JSON.stringify(replyObj);
 
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'assistant',
         text: replyText,
-        suggestedActions: res.response?.suggestedActions,
-        safetyNotice: res.response?.safetyNotice,
+        suggestedActions: replyObj?.suggestedActions,
+        safetyNotice: replyObj?.safetyNotice,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, aiMsg]);
@@ -81,7 +94,14 @@ export const AiAssistantPage: React.FC = () => {
             <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">{t('navAssistant')}</h2>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">{t('navAssistant')}</h2>
+              {isDemoMode && (
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-slate-950">
+                  DEMO MODE
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-teal-400 font-medium">Context-Aware Financial Guidance</p>
           </div>
         </div>
@@ -163,7 +183,11 @@ export const AiAssistantPage: React.FC = () => {
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            placeholder="Ask about missing documents, claim steps, or what to focus on today..."
+            placeholder={
+              isDemoMode
+                ? "Try: 'Life insurance ka claim kitna hai?' or 'Mere father ke kitne loans pending hain?'"
+                : "Ask about missing documents, claim steps, or what to focus on today..."
+            }
             className="flex-1 px-3.5 py-2.5 sm:py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
           />
           <button

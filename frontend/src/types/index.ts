@@ -24,16 +24,39 @@ export interface DeceasedProfile {
   updatedAt: string;
 }
 
+export type RecordType = 'Asset' | 'Liability' | 'Money to Recover';
+
 export type AssetCategory =
   | 'Bank Account'
   | 'Fixed Deposit'
   | 'Insurance'
+  | 'Health Insurance'
   | 'Investment'
+  | 'Stocks'
+  | 'Government Scheme'
   | 'Pension'
   | 'Digital Asset'
+  | 'Home Loan'
+  | 'Vehicle Loan'
+  | 'Friend/Relative Loan'
+  | 'Personal Loan'
+  | 'Liability'
+  | 'Money to Recover'
   | 'Other';
 
-export type AssetStatus = 'Known' | 'Potential' | 'Confirmed' | 'Claim Started' | 'Claim Completed';
+export type AssetStatus =
+  | 'Known'
+  | 'Potential'
+  | 'Confirmed'
+  | 'Claim Started'
+  | 'Claim Not Started'
+  | 'Policy Active / Claim Guidance Available'
+  | 'Eligibility/Claim Pending'
+  | 'Documentation Required'
+  | 'Outstanding'
+  | 'Recovery Pending'
+  | 'Completed'
+  | 'Claim Completed';
 
 export interface Asset {
   _id: string;
@@ -41,6 +64,7 @@ export interface Asset {
   deceasedId: string;
   name: string;
   category: AssetCategory;
+  recordType?: RecordType;
   institution: string;
   accountOrPolicyNumber?: string;
   estimatedValue: number;
@@ -156,6 +180,11 @@ export interface DashboardData {
   allDeceasedProfiles: DeceasedProfile[];
   stats: {
     totalAssets: number;
+    totalAssetsValue?: number;
+    totalLiabilitiesCount?: number;
+    totalLiabilitiesValue?: number;
+    totalRecoverableCount?: number;
+    totalRecoverableValue?: number;
     potentialAssets: number;
     confirmedAssets: number;
     activeClaims: number;

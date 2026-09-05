@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 import {
   HeartHandshake,
   ShieldCheck,
@@ -18,6 +19,14 @@ import {
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
+  const { startDemo } = useAuth();
+  const navigate = useNavigate();
+
+  const handleStartDemo = () => {
+    startDemo();
+    navigate('/dashboard');
+  };
+
   const journeySteps = [
     { title: 'Discover', desc: 'Uncover hidden bank accounts, term deposits, insurance policies & pensions.', icon: Search },
     { title: 'Understand', desc: 'AI extracts details & identifies missing requirements without legal jargon.', icon: Compass },
@@ -55,18 +64,18 @@ export const LandingPage: React.FC = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={handleStartDemo}
+              className="w-full sm:w-auto px-8 py-4 text-base font-extrabold text-teal-950 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-300 hover:to-emerald-300 rounded-xl transition-all shadow-xl shadow-teal-950/80 flex items-center justify-center space-x-2.5 active:scale-98"
+            >
+              <Sparkles className="w-5 h-5 text-teal-950 fill-teal-950" />
+              <span>Start Demo (Instant Access)</span>
+            </button>
             <Link
               to="/register"
-              className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-teal-600 to-sky-600 hover:from-teal-500 hover:to-sky-500 rounded-xl transition-all shadow-xl shadow-teal-950/80 flex items-center justify-center"
-            >
-              Get Started Free
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-            <Link
-              to="/how-it-works"
               className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-all flex items-center justify-center"
             >
-              How It Works
+              Create Account
             </Link>
           </div>
         </div>
