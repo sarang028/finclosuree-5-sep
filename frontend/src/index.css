@@ -23,6 +23,14 @@
   }
 }
 
+.font-cursive {
+  font-family: 'Caveat', cursive;
+}
+
+.font-serif-display {
+  font-family: 'Playfair Display', serif;
+}
+
 /* FinClosure Clean Card Utility */
 .fin-card {
   background-color: #ffffff;

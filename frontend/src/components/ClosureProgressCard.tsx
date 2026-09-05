@@ -49,6 +49,12 @@ export const ClosureProgressCard: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <div className="pt-2 border-t border-slate-100">
+        <p className="text-[11px] font-serif italic text-slate-600 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-100/80">
+          “Not just numbers. Real peace of mind for your family.”
+        </p>
+      </div>
     </div>
   );
 };
